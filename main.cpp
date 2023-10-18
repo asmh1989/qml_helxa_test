@@ -1,12 +1,13 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
     qputenv("QT_SCALE_FACTOR", "1.2");
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 //    QQuickStyle::setStyle("Material");
 
     QQuickStyle::setStyle("Universal");

@@ -6,7 +6,7 @@ import "common.js" as Common
 Rectangle{
     color:Qt.rgba(100,100, 100, 100)
     width: parent.width
-    height: 100
+    height: 70
 
     property bool starting: false
     //    property var data
@@ -18,8 +18,8 @@ Rectangle{
         func_status.value = obj[Common.FUNC_STATUS]
         ambient_temp.value = obj[Common.AMBIENT_TEMP] / 100.0
         flow_rt.value = obj[Common.FLOW_RT] / 10.0
-        trace_umd1.value = obj[Common.TRACE_UMD1] /10.0
-        starting = Common.is_helxa_starting(func_status.value)
+        trace_umd1.value = obj[Common.TRACE_UMD1]
+        starting = !Common.is_helxa_finish(func_status.value)
         update_time.value = obj["update_time"]
     }
 
@@ -27,7 +27,7 @@ Rectangle{
         anchors.fill: parent
 
         Rectangle {
-            height: 50
+            height: 20
             width: parent.width
 
             Row {
@@ -58,7 +58,7 @@ Rectangle{
                     id: trace_umd1
                     name:"检测器1实时值"
                     value:"0"
-                    unit: "mL/s"
+                    unit: "ppb"
                 }
 
                 Mylabel {

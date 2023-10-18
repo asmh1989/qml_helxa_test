@@ -7,6 +7,9 @@ Rectangle{
     height: 32
     width: parent.width
 
+    property alias url: tf.text
+
+
     property bool is_open: false
     Row {
         spacing: 6
@@ -14,7 +17,7 @@ Rectangle{
         anchors.centerIn: parent
 
         TextField {
-            text: "ws://192.168.2.184:8080"
+            id: tf
             height: parent.height
             width: 188
             font.pixelSize: 14
@@ -41,21 +44,21 @@ Rectangle{
             id: cb
             height: parent.height
             width: 192
-            currentIndex: 7
+//            currentIndex: 7
             model: [
-                "NONE",
-                "FENO50_TRAIN1",
-                "FENO50_TRAIN2",
+//                "NONE",
+//                "FENO50_TRAIN1",
+//                "FENO50_TRAIN2",
                 "FENO50_MODE1",
-                "FENO50_MODE2",
-                "FENO200_MODE1",
-                "FENO200_MODE2",
+//                "FENO50_MODE2",
+//                "FENO200_MODE1",
+//                "FENO200_MODE2",
                 "SNO",
-                "NNO_MODE1",
-                "NNO_MODE2",
-                "ECO",
-                "SCO",
-                "CLEAN",
+//                "NNO_MODE1",
+//                "NNO_MODE2",
+//                "ECO",
+//                "SCO",
+//                "CLEAN",
             ]
 
         }

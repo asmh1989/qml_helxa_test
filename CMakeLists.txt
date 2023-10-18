@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(OPENSSL_ROOT_DIR "C:/OpenSSL-Win64")
 
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS QML Quick Core QuickControls2 WebSockets)
+find_package(Qt6 6.2 REQUIRED COMPONENTS QML Gui Charts Quick Core QuickControls2 WebSockets)
 
 
 qt_add_executable(appqt-websockerts_demo
@@ -30,6 +30,7 @@ qt6_add_qml_module(appqt-websockerts_demo
         QML_FILES Mylabel.qml
         QML_FILES Toast.qml
         QML_FILES ToastManager.qml
+        QML_FILES Mychart.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -50,6 +51,8 @@ target_link_libraries(appqt-websockerts_demo
     Qt6::Core
     Qt6::Qml
     Qt6::WebSockets
+    Qt6::Charts
+    Qt::Gui
 )
 
 include(GNUInstallDirs)

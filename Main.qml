@@ -12,14 +12,19 @@ Window  {
     width: 960
     height: 640
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("em-exhale")
 
     readonly property int margin: 10
     readonly property string _sample_value: JSON.stringify(Common.get_sample_req(0))
 
     property bool connected: false
 
+    property string _url: "ws://192.168.2.184:8080"
+
     property var sample_data;
+
+    property int read_times: 0
+    property int update_count: 0
 
     ToastManager {
         id: toast
@@ -28,11 +33,14 @@ Window  {
 
     WebSocket {
         id: socket
-        url: "ws://192.168.2.184:8080"
+        url: _url
         onTextMessageReceived: function(message) {
             var obj = JSON.parse(message);
             if(obj.ok) {
                 if (obj.method === "get_sample") {
+                    if(sample_data && sample_data["update_time"] !== obj.ok["update_time"]){
+                        update_count += 1;
+                    }
                     sample_data = obj.ok;
                     my_satatus.dataChanged(obj.ok);
                 }
@@ -41,20 +49,24 @@ Window  {
             }
         }
         onStatusChanged:{
+            connected = false
+
             if (socket.status == WebSocket.Error) {
                 appendLog("Error: " + socket.errorString)
-                connected = false
             } else if (socket.status == WebSocket.Open) {
-                appendLog("Socket connected")
+                appendLog("Socket connected = "+ header.url)
                 connected = true
                 if(!sample_data){
                     refresh();
                 }
-
             } else if (socket.status == WebSocket.Closed) {
                 connected = false
-                appendLog("Socket closed")
+                appendLog("Socket closed = "+ header.url)
             } else if (socket.status == WebSocket.Connecting) {
+                appendLog("Socket Connecting = "+ header.url)
+            }
+            if(!connected) {
+                stop();
             }
         }
 
@@ -70,6 +82,7 @@ Window  {
             Header {
                 id: header
                 is_open: connected
+                url: _url
             }
 
             Status {
@@ -78,8 +91,17 @@ Window  {
                 anchors.topMargin: margin
             }
 
+            Mychart {
+                id: my_chart
+                width: parent.width
+                anchors.top: my_satatus.bottom
+                anchors.bottom: footer.top
+                anchors.margins: margin  / 2
+            }
+
 
             Rectangle{
+                id: footer
                 color:Qt.rgba(100,100,100, 100)
                 anchors.bottom: parent.bottom
                 height: 128
@@ -87,8 +109,6 @@ Window  {
 
                 ScrollView {
                     anchors.fill: parent
-                    //                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-
                     TextArea {
                         id: area
                         wrapMode: Text.Wrap
@@ -104,28 +124,30 @@ Window  {
 
     Timer {
         id: timer
-        //        triggeredOnStart: true
         repeat: true
         interval: 100
         onTriggered: ()=>{
-                         socket.sendTextMessage(_sample_value);
                          if(!timer2.running) {
+                             console.log("timer2 will start")
                              timer2.start();
                          }
+                         read_times += 1;
+                         socket.sendTextMessage(_sample_value);
+
                      }
 
     }
 
     Timer {
         id: timer2
-        //        triggeredOnStart: true
         repeat: true
-        interval: 1000
+        interval: 500
         onTriggered: ()=>{
-                         if(sample_data && !Common.is_helxa_starting(sample_data[Common.FUNC_STATUS])){
-                             timer2.stop();
+                         if(sample_data && Common.is_helxa_finish(sample_data[Common.FUNC_STATUS])){
+                             console.log("timer2 will stop")
+                             appendLog("stop: read_times = "+ read_times+" update_count = "+ update_count)
                              timer.stop();
-                             refresh();
+                             timer2.stop();
                          }
                      }
     }
@@ -135,11 +157,12 @@ Window  {
         repeat: false
         interval: 1200
         onTriggered: ()=>{
-                             refresh();
+                         refresh();
                      }
     }
 
     function start_websocket(open) {
+        socket.url = header.url;
         socket.active = open;
     }
 
@@ -148,36 +171,54 @@ Window  {
             socket.sendTextMessage(JSON.stringify(msg))
         } else {
             toast.show("websockets 已断开", 3000);
+            stop();
         }
     }
 
+    function stop() {
+        read_times = 0;
+        update_count = 0;
+        timer.stop();
+        my_chart.finish();
+    }
+
     function start_helxa_test(command) {
-        var msg = Common.get_start_helxa_req(command);
-        appendLog("send: "+JSON.stringify(msg))
-        send_data(msg)
-        if (timer.running) {
-            timer.stop();
+        if(!timer.running){
+            var msg = Common.get_start_helxa_req(command);
+            appendLog("send: "+JSON.stringify(msg))
+            send_data(msg)
+            stop();
+            timer.restart()
+            my_chart.start();
+            console.log("start_helxa_test ...")
+        } else {
+            showToast("已在呼吸测试中, 请稍后")
         }
-        timer.start()
+
     }
 
     function stop_helxa_test() {
         var msg = Common.get_stop_helxa_req();
         appendLog("send: "+JSON.stringify(msg))
         send_data(msg)
-        timer.stop()
-        timer2.stop();
+        stop();
+        my_chart.finish();
+
         refresh_timer.start();
     }
 
     function refresh() {
         let msg = Common.get_sample_req(100);
         send_data(msg);
-
     }
 
     function showToast(msg) {
         toast.show(msg, 3000);
+    }
+
+    function showToastAndLog(msg) {
+        appendLog(msg)
+        toast.show(msg, 1000);
     }
 
 
@@ -189,9 +230,6 @@ Window  {
             area.text += "\n"
             area.cursorPosition = area.length-1
         }
-
     }
-
-
 
 }

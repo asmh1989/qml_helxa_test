@@ -49,6 +49,48 @@ const UMD1_ADC_SEN = "DSA_R16_UMD1_ADC_SEN";
 const UMD1_ADC_SEN_AVG = "DSA_R16_UMD1_ADC_SEN_AVG";
 const UMD1_ADC_AUX = "DSA_R16_UMD1_ADC_AUX";
 const UMD1_ADC_AUX_AVG = "DSA_R16_UMD1_ADC_AUX_AVG";
+const UPDATE_TIME = "update_time";
+
+// 采样状态
+const STATUS_FLOW1 = "StatusFlow1";
+const STATUS_FLOW2 = "StatusFlow2";
+const STATUS_FLOW3 = "StatusFlow3";
+const STATUS_FLOW4 = "StatusFlow4";
+const STATUS_FLOW5 = "StatusFlow5";
+const STATUS_FLOW6 = "StatusFlow6";
+const STATUS_FLOW7 = "StatusFlow7";
+const STATUS_FLOW8 = "StatusFlow8";
+
+// 分析
+const STATUS_ANALY_0 = "StatusAnalysis0";
+const STATUS_ANALY_1 = "StatusAnalysis1";
+const STATUS_ANALY_2 = "StatusAnalysis2";
+const STATUS_ANALY_3 = "StatusAnalysis3";
+const STATUS_ANALY_4 = "StatusAnalysis4";
+
+// 结束
+const STATUS_IDLE = "StatusEndIdle";
+const STATUS_END_FINISH = "StatusEndFinish";
+const STATUS_END_STOP = "StatusEndStop";
+const STATUS_END_FINISH2 = "StatusEndFinish2";
+
+const STATUS_E1 = "StatusE1Inhale"
+const STATUS_E2 = "StatusE2Inhale"
+const STATUS_E3 = "StatusE3Hold"
+const STATUS_E4 = "StatusE4Flow"
+const STATUS_E5 = "StatusE5Flow"
+const STATUS_E6 = "StatusE6Sample"
+const STATUS_E7 = "StatusE7PHigh"
+const STATUS_E8 = "StatusE8PLow"
+
+
+const COMMAND_NONE = "None"
+const COMMAND_FENO50_1 = "Feno50Train1"
+const COMMAND_FENO50_2 = "Feno50Train2"
+const COMMAND_FENO50_MODE1 = "Feno50Mode1"
+const COMMAND_FENO50_MODE2 = "Feno50Mode2"
+
+
 
 var _sample_values = [
             FUNC_STATUS,
@@ -81,11 +123,64 @@ function get_stop_helxa_req() {
     }
 }
 
-function is_helxa_starting(value) {
-    var s = value.toUpperCase()
-    if(s === "STATUSENDSTOP" || s === "STATUSENDFINISH"){
-        return false
+// 当前呼吸测试是否在采样
+function is_helxa_sample(value) {
+    let v = get_helxa_status(value);
+    return v === HELXA_STATUS_SAMPLE
+}
+
+// 当前呼吸测试是否在分析
+function is_helxa_analy(value) {
+    let v = get_helxa_status(value);
+    return v === HELXA_STATUS_ANAY
+}
+
+// 当前呼吸测试是否在已完成
+function is_helxa_finish(value) {
+    let v = get_helxa_status(value);
+    return v === HELXA_STATUS_FINISH
+}
+
+
+const HELXA_STATUS_SAMPLE = 0
+const HELXA_STATUS_ANAY = 1
+const HELXA_STATUS_FINISH = 2
+
+function get_helxa_status(value) {
+    if(value === STATUS_FLOW1 ||value === STATUS_FLOW2 ||
+            value === STATUS_FLOW3 ||value === STATUS_FLOW4 ||
+            value === STATUS_FLOW5 ||value === STATUS_FLOW6 ||
+            value === STATUS_FLOW7 ||value === STATUS_FLOW8 ) {
+        return HELXA_STATUS_SAMPLE
+    } else if (value === STATUS_ANALY_0 || value === STATUS_ANALY_1 ||
+               value === STATUS_ANALY_2 || value === STATUS_ANALY_3 || value === STATUS_ANALY_4){
+        return HELXA_STATUS_ANAY
     } else {
-        return true
+        return HELXA_STATUS_FINISH
     }
 }
+
+function get_status_info(value) {
+    if(value === STATUS_E1) {
+        return "未检测到吸气动作"
+    } else if(value === STATUS_E2) {
+        return "未检测到吸气动作"
+    } else if(value === STATUS_E3) {
+        return "未检测到吸气动作"
+    }else if(value === STATUS_E4) {
+        return "呼气流量过高"
+    }else if(value === STATUS_E5) {
+        return "呼气流量过低"
+    }else if(value === STATUS_E6) {
+        return "采样超时"
+    }else if(value === STATUS_E7) {
+        return "正压过大"
+    }else if(value === STATUS_E8) {
+        return "负压过大"
+    } else if (value ===STATUS_END_STOP){
+        return "手动停止"
+    }
+
+}
+
+
