@@ -2,15 +2,22 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QApplication>
+#include "fileio.h"
 
 int main(int argc, char *argv[])
 {
     qputenv("QT_SCALE_FACTOR", "1.2");
 
     QApplication app(argc, argv);
+
+    app.setOrganizationName("em");
+    app.setOrganizationDomain("em.com");
+    app.setApplicationName("em");
 //    QQuickStyle::setStyle("Material");
 
     QQuickStyle::setStyle("Universal");
+
+    qmlRegisterType<FileIO,1>("FileIO",1,0,"FileIO");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/qt-websockerts_demo/Main.qml"_qs);

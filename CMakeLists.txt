@@ -31,6 +31,7 @@ qt6_add_qml_module(appqt-websockerts_demo
         QML_FILES Toast.qml
         QML_FILES ToastManager.qml
         QML_FILES Mychart.qml
+        SOURCES fileio.h fileio.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -4,7 +4,7 @@ import QtQuick.Controls
 import QtCharts
 
 import "common.js" as Common
-
+import FileIO
 Rectangle {
     property var arr_flow_rt: []
     property var arr_umd1: []
@@ -17,12 +17,15 @@ Rectangle {
     property string _status: ""
     function finish() {
         if(chart_timer.running){
+            showResult();
+            root.in_helxa = false
             console.log("chart  stop!!");
             chart_timer.stop();
             reset_data()
             _start_time = 0
         }
     }
+
 
     function showResult() {
         var success = _status === Common.STATUS_END_FINISH
@@ -31,14 +34,18 @@ Rectangle {
             // 测试完成
             var len = arr_umd1.length;
             if (len > 501) {
-                var lastElements = arr_umd1.slice(201,250);
+                var lastElements = arr_umd1.slice(appSettings.umd_state1,appSettings.umd_state2);
                 var sum = lastElements.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-                var av1 = sum / 50;
+                var av1 = sum / lastElements.length;
 
-                lastElements = arr_umd1.slice(451,500);
+                lastElements = arr_umd1.slice(appSettings.umd_state3,appSettings.umd_state4);
                 sum = lastElements.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-                var av2 = sum / 50;
-                msg = "测试成功: umd1均值差 = " +Math.abs(av1 - av2).toFixed(2) + " (ppb)"
+                var av2 = sum / lastElements.length;
+                var r = Math.abs(av1 - av2).toFixed(2);
+                msg = "测试成功: umd1均值差 = " +r + " (ppb)"
+                var content = arr_umd1.join(',')+","+r
+                myFile.write(content);
+                root.showToastAndLog("测试结果已保存, 见文件: "+ myFile.source)
             } else {
                 success = false;
                 msg = "帧数太少!"
@@ -77,11 +84,9 @@ Rectangle {
                          }
                          // 结束
                          if(flow_x > 10 && Common.is_helxa_finish(_status)) {
-                             showResult();
                              finish();
                              return;
                          }
-
 
                          if (_start_time === 0) {
                              var update_time = new Date(obj[Common.UPDATE_TIME]).getTime();
@@ -252,6 +257,20 @@ Rectangle {
         }
     }
 
+    FileIO{
+        id:myFile
+        source: "test_file.txt"
+        onError: console.log(msg)
+    }
+
     Component.onCompleted: {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = String(now.getMonth() + 1).padStart(2, '0');
+        var day = String(now.getDate()).padStart(2, '0');
+        var hours = String(now.getHours()).padStart(2, '0');
+        var minutes = String(now.getMinutes()).padStart(2, '0');
+        var seconds = String(now.getSeconds()).padStart(2, '0');
+        myFile.source = year + '_' + month + '_' + day + '_' + hours + '_' + minutes + '_' + seconds+".txt";
     }
 }

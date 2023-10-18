@@ -5,12 +5,12 @@ import QtQuick.Controls
 import QtWebSockets
 
 import "common.js" as Common
-
+import QtCore
 
 Window  {
     id: root
     width: 960
-    height: 640
+    height: 720
     visible: true
     title: qsTr("em-exhale")
 
@@ -19,12 +19,13 @@ Window  {
 
     property bool connected: false
 
-    property string _url: "ws://192.168.2.184:8080"
 
     property var sample_data;
 
     property int read_times: 0
     property int update_count: 0
+
+    property bool in_helxa: false
 
     ToastManager {
         id: toast
@@ -33,7 +34,7 @@ Window  {
 
     WebSocket {
         id: socket
-        url: _url
+        url: appSettings.url
         onTextMessageReceived: function(message) {
             var obj = JSON.parse(message);
             if(obj.ok) {
@@ -50,7 +51,7 @@ Window  {
         }
         onStatusChanged:{
             connected = false
-
+            appSettings.url = socket.url
             if (socket.status == WebSocket.Error) {
                 appendLog("Error: " + socket.errorString)
             } else if (socket.status == WebSocket.Open) {
@@ -82,7 +83,7 @@ Window  {
             Header {
                 id: header
                 is_open: connected
-                url: _url
+                url: appSettings.url
             }
 
             Status {
@@ -180,6 +181,7 @@ Window  {
         update_count = 0;
         timer.stop();
         my_chart.finish();
+        in_helxa = false
     }
 
     function start_helxa_test(command) {
@@ -191,6 +193,7 @@ Window  {
             timer.restart()
             my_chart.start();
             console.log("start_helxa_test ...")
+            in_helxa = true;
         } else {
             showToast("已在呼吸测试中, 请稍后")
         }
@@ -218,7 +221,7 @@ Window  {
 
     function showToastAndLog(msg) {
         appendLog(msg)
-        toast.show(msg, 1000);
+        toast.show(msg, 2000);
     }
 
 
@@ -226,10 +229,26 @@ Window  {
         if (msg.length === 0) {  // clear
             area.text = ""
         } else {
+            var d = new Date().toISOString();
+            area.text += d+" => "
             area.text += msg
             area.text += "\n"
             area.cursorPosition = area.length-1
         }
+    }
+
+    Settings {
+        id: appSettings
+        location: "./config.txt"
+        property string url: "ws://192.168.2.184:8080"
+        property int umd_state1: 201
+        property int umd_state2: 250
+        property int umd_state3: 451
+        property int umd_state4: 500
+
+        property int offline_times: 10
+        property int offline_interval: 2
+
     }
 
 }

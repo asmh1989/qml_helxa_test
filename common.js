@@ -179,6 +179,9 @@ function get_status_info(value) {
         return "负压过大"
     } else if (value ===STATUS_END_STOP){
         return "手动停止"
+    } else {
+//        console.log("status = "+ value)
+        return "手动停止"
     }
 
 }
