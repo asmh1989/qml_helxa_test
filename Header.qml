@@ -5,7 +5,7 @@ import "common.js" as Common
 
 Rectangle{
     color:Qt.rgba(100,100, 100, 100)
-    height: 72
+    height: is_sno() ? 72 : 32
     width: parent.width
 
     property alias url: tf.text
@@ -13,9 +13,15 @@ Rectangle{
     property int times: 0
 
     property bool is_open: false
+
+    function is_sno() {
+        return cb.currentText === "SNO"
+    }
+
     Column {
         anchors.fill: parent
         Row {
+            id: row1
             spacing: 6
             height: 32
             anchors.horizontalCenter: parent.horizontalCenter
@@ -48,6 +54,11 @@ Rectangle{
                 id: cb
                 height: parent.height
                 width: 192
+                currentIndex: appSettings.helxa_type
+                onCurrentTextChanged: {
+                    appSettings.helxa_type = cb.currentIndex
+                }
+
                 //            currentIndex: 7
                 model: [
                     //                "NONE",
@@ -92,8 +103,10 @@ Rectangle{
         }
 
         Row {
+            id: row2
             spacing: 6
             height: 32
+            visible: is_sno()
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {

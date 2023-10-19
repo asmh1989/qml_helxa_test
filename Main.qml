@@ -43,6 +43,10 @@ Window  {
                         update_count += 1;
                     }
                     sample_data = obj.ok;
+                    if(in_helxa && update_count > 10 && Common.is_helxa_finish(sample_data[Common.FUNC_STATUS])) {
+                        in_helxa = false
+                    }
+
                     my_satatus.dataChanged(obj.ok);
                 }
             } else {
@@ -248,6 +252,8 @@ Window  {
 
         property int offline_times: 10
         property int offline_interval: 2
+
+        property int helxa_type: 0
 
     }
 

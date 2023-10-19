@@ -18,7 +18,6 @@ Rectangle {
     function finish() {
         if(chart_timer.running){
             showResult();
-            root.in_helxa = false
             console.log("chart  stop!!");
             chart_timer.stop();
             reset_data()
