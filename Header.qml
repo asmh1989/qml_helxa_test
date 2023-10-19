@@ -70,6 +70,7 @@ Rectangle{
             Button {
                 height: parent.height
                 text: "开始测试"
+                enabled: !root.in_helxa
                 onClicked: {
                     save_cache()
                     root.start_helxa_test(cb.currentText);
@@ -173,9 +174,15 @@ Rectangle{
         }
     }
     function stop_test() {
-        times = 0
         timer.stop();
         timer2.stop();
+        times = 0
+    }
+    function _start_test() {
+        times += 1
+        var msg = "开始循环离线测试 times = "+ times
+        root.showToastAndLog(msg)
+        root.start_helxa_test("SNO");
     }
 
     Timer {
@@ -184,25 +191,26 @@ Rectangle{
         interval: 1000
         repeat: true
         onTriggered: {
-            if(!root.in_helxa){
-                times += 1
-                var msg = "开始循环离线测试 times = "+ times
-                root.showToastAndLog(msg)
-                root.start_helxa_test("SNO");
+            if(times === 0){
+                // 开始第一次
+                _start_test();
                 return;
             }
 
-            if(times < appSettings.offline_times){
-                if (!root.in_helxa) {
+            if(times < appSettings.offline_times + 1){
+                if (!root.in_helxa) { // 结束后
                     timer.stop();
-                    timer2.interval = appSettings.offline_interval * 1000;
-                    console.log("延时离线循环定时器启动 .. "+ timer2.interval)
-                    timer2.start();
+                    if(times === appSettings.offline_times) {
+                        // 次数用完, 结束任务
+                        root.showToastAndLog(appSettings.offline_times+"次循环离线测试完成!")
+                        stop_test();
+                    } else {
+                        // 还有次数开启延时间隔执行
+                        timer2.interval = Math.max(appSettings.offline_interval, 1) * 1000;
+                        console.log("延时离线循环定时器启动 .. "+ timer2.interval)
+                        timer2.start();
+                    }
                 }
-            } else {
-                console.log("timer stop .. "+ appSettings.offline_times)
-                root.showToastAndLog(appSettings.offline_times+"次循环离线测试完成!")
-stop_test()
             }
         }
     }
@@ -213,6 +221,7 @@ stop_test()
         repeat: false
         interval: 1000
         onTriggered: {
+            _start_test();
             timer.start();
         }
     }

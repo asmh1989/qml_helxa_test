@@ -129,7 +129,7 @@ Window  {
         interval: 100
         onTriggered: ()=>{
                          if(!timer2.running) {
-                             console.log("timer2 will start")
+                             console.log("呼吸检测停止检测定时器 will start")
                              timer2.start();
                          }
                          read_times += 1;
@@ -145,7 +145,7 @@ Window  {
         interval: 500
         onTriggered: ()=>{
                          if(sample_data && Common.is_helxa_finish(sample_data[Common.FUNC_STATUS])){
-                             console.log("timer2 will stop")
+                             console.log("呼吸检测停止检测定时器 will stop")
                              appendLog("stop: read_times = "+ read_times+" update_count = "+ update_count)
                              timer.stop();
                              timer2.stop();

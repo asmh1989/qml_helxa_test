@@ -45,7 +45,7 @@ Rectangle {
                 msg = "测试成功: umd1均值差 = " +r + " (ppb)"
                 var content = arr_umd1.join(',')+","+r
                 myFile.write(content);
-                root.showToastAndLog("测试结果已保存, 见文件: "+ myFile.source)
+                root.appendLog("测试结果已保存, 见文件: "+ myFile.source)
             } else {
                 success = false;
                 msg = "帧数太少!"

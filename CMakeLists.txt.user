@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 11.0.3, 2023-10-18T11:40:58. -->
+<!-- Written by QtCreator 11.0.3, 2023-10-19T09:13:10. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -405,8 +405,8 @@
   <variable>ProjectExplorer.Project.Target.1</variable>
   <valuemap type="QVariantMap">
    <value type="QString" key="DeviceType">Desktop</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">MSGV2019</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">MSGV2019</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">MSGV2019-6.5.3</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">MSGV2019-6.5.3</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{ec923241-5fcf-42fd-a7d0-f4fcc4ac9254}</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
