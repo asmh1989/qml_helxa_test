@@ -6,15 +6,17 @@ import QtCharts
 import "common.js" as Common
 import FileIO
 Rectangle {
-    property var arr_flow_rt: []
     property var arr_umd1: []
-    property int _start_time: 0
-    property int _interval: 100
-    property int flow_x: 0
     property int umd1_x: 0
     property int umd1_min_y: 0
+
+    /// 用于画chart
+    readonly property int _interval: 100
+    property var arr_flow_rt: []
+    property int _start_time: 0
+    property int flow_x: 0
     property int flow_min_y: 0
-    property string _status: ""
+
     function finish() {
         if(chart_timer.running){
             showResult();
@@ -75,7 +77,6 @@ Rectangle {
         onTriggered: ()=>{
                          var obj = root.sample_data
                          var func_ack = obj[Common.FUNC_ACK];
-                         _status = obj[Common.FUNC_STATUS];
 
                          // 未准备好
                          if(func_ack === 0 && flow_x === 0) {
@@ -270,6 +271,6 @@ Rectangle {
         var hours = String(now.getHours()).padStart(2, '0');
         var minutes = String(now.getMinutes()).padStart(2, '0');
         var seconds = String(now.getSeconds()).padStart(2, '0');
-        myFile.source = year + '_' + month + '_' + day + '_' + hours + '_' + minutes + '_' + seconds+".txt";
+        myFile.source = "SNO_"+year + '_' + month + '_' + day + '_' + hours + '_' + minutes + '_' + seconds+".txt";
     }
 }

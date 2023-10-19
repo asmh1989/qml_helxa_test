@@ -180,10 +180,50 @@ function get_status_info(value) {
     } else if (value ===STATUS_END_STOP){
         return "手动停止"
     } else {
-//        console.log("status = "+ value)
+        //        console.log("status = "+ value)
         return "手动停止"
     }
 
 }
 
+
+function mapValue2(input) {
+    if(input < -80){
+        return -19
+    } else if ( input <= -30) {   // -80, -30 => -18,-10
+        return -10 + (input +30 )  * 8 / 50;
+    } else if ( input <= 0) {       // -30, 0 => -10, 0
+        return input / 3;
+    } else if (input <= 20) {        // 0 , 20 =>  0, 15
+        return  input * 15 / 20;
+    } else if (input <= 40) {       // 20, 40 => 15,30
+        return 15 + (input - 20) * 15 / 20;
+    } else if ( input <= 60) {       // 40, 60 => 30, 70
+        return 30 + (input - 40) * 2.5;
+    } else if (input <= 84) {       // 60, 85 => 70, 83
+        return 70 + (input -60) * 13 / 25;
+    }  else  {
+        return 84
+    }
+}
+
+function mapValue(input) {
+    if(input < -80){
+        return -19
+    } else if (input <= -30) {   // -80, -30 => -18,-10
+        return -10 + (input +30 )  * 8 / 50;
+    } else if ( input <= 0) {       // -30, 0 => -10, 0
+        return input / 3;
+    } else if ( input <= 20) {        // 0 , 20 =>  0, 15
+        return  input * 15 / 20;
+    } else if (input <= 45) {       // 20, 40 => 15,30
+        return 15 + (input - 20) * 15 / 25;
+    } else if ( input <= 55) {       // 45, 55 => 30, 70
+        return 30 + (input -45) * 5;
+    } else if (input <= 84) {       // 55, 84 => 70, 83
+        return 70 + (input - 55) * 13 / 29;
+    }  else  {
+        return 84
+    }
+}
 

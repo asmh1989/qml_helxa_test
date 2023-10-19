@@ -18,14 +18,16 @@ Window  {
     readonly property string _sample_value: JSON.stringify(Common.get_sample_req(0))
 
     property bool connected: false
-
-
     property var sample_data;
-
     property int read_times: 0
     property int update_count: 0
 
+    /// 呼吸检测进行状态
     property bool in_helxa: false
+    property string _status: ""
+
+    readonly property int aver_num: 3
+
 
     ToastManager {
         id: toast
@@ -43,7 +45,10 @@ Window  {
                         update_count += 1;
                     }
                     sample_data = obj.ok;
-                    if(in_helxa && update_count > 10 && Common.is_helxa_finish(sample_data[Common.FUNC_STATUS])) {
+
+                    _status = sample_data[Common.FUNC_STATUS];
+
+                    if(in_helxa && update_count > 10 && Common.is_helxa_finish(_status)) {
                         in_helxa = false
                     }
 
@@ -96,13 +101,26 @@ Window  {
                 anchors.topMargin: margin
             }
 
-            Mychart {
-                id: my_chart
+            Item {
                 width: parent.width
                 anchors.top: my_satatus.bottom
                 anchors.bottom: footer.top
                 anchors.margins: margin  / 2
+
+                Mychart {
+                    id: my_chart
+                    anchors.fill: parent
+                    visible: header.is_sno()
+                }
+
+                Fenomode {
+                    id: feno_chart
+                    anchors.fill: parent
+                    visible: !header.is_sno()
+                }
             }
+
+
 
 
             Rectangle{
@@ -127,6 +145,7 @@ Window  {
     }
 
 
+    /// 定时获取sample数据
     Timer {
         id: timer
         repeat: true
@@ -137,7 +156,7 @@ Window  {
                              timer2.start();
                          }
                          read_times += 1;
-                         socket.sendTextMessage(_sample_value);
+                         _send_(_sample_value);
 
                      }
 
@@ -171,12 +190,33 @@ Window  {
         socket.active = open;
     }
 
-    function send_data(msg) {
+    function send_json(msg) {
         if(connected) {
-            socket.sendTextMessage(JSON.stringify(msg))
+            _send_(JSON.stringify(msg))
         } else {
             toast.show("websockets 已断开", 3000);
             stop();
+        }
+    }
+
+    function _send_(msg) {
+//        console.log("发送数据 "+ (new Date().getTime()))
+        socket.sendTextMessage(msg)
+    }
+
+    function chart_start(){
+        if(header.is_sno()){
+            my_chart.start();
+        } else {
+            feno_chart.start();
+        }
+    }
+
+    function chart_stop(){
+        if(header.is_sno()) {
+            my_chart.finish();
+        } else {
+            feno_chart.finish();
         }
     }
 
@@ -184,7 +224,7 @@ Window  {
         read_times = 0;
         update_count = 0;
         timer.stop();
-        my_chart.finish();
+        chart_stop();
         in_helxa = false
     }
 
@@ -192,10 +232,10 @@ Window  {
         if(!timer.running){
             var msg = Common.get_start_helxa_req(command);
             appendLog("send: "+JSON.stringify(msg))
-            send_data(msg)
+            send_json(msg)
             stop();
             timer.restart()
-            my_chart.start();
+            chart_start();
             console.log("start_helxa_test ...")
             in_helxa = true;
         } else {
@@ -207,16 +247,14 @@ Window  {
     function stop_helxa_test() {
         var msg = Common.get_stop_helxa_req();
         appendLog("send: "+JSON.stringify(msg))
-        send_data(msg)
+        send_json(msg)
         stop();
-        my_chart.finish();
-
         refresh_timer.start();
     }
 
     function refresh() {
-        let msg = Common.get_sample_req(100);
-        send_data(msg);
+        let msg = Common.get_sample_req(1);
+        send_json(msg);
     }
 
     function showToast(msg) {

@@ -15,7 +15,7 @@ Rectangle{
     function dataChanged(obj) {
         trace_umd1_temp.value = obj[Common.TRACE_UMD1_TEMP] / 100.0
         func_name.value = obj[Common.FUNC_NAME]
-        func_status.value = obj[Common.FUNC_STATUS]
+        func_status.value = _status
         ambient_temp.value = obj[Common.AMBIENT_TEMP] / 100.0
         flow_rt.value = obj[Common.FLOW_RT] / 10.0
         trace_umd1.value = obj[Common.TRACE_UMD1]
