@@ -26,8 +26,6 @@ Window  {
     property bool in_helxa: false
     property string _status: ""
 
-    readonly property int aver_num: 3
-
 
     ToastManager {
         id: toast
@@ -288,6 +286,9 @@ Window  {
         property int offline_interval: 2
 
         property int helxa_type: 0
+
+        property int aver_num: 3
+        property bool use_real_red_line: true
 
     }
 

@@ -9,8 +9,10 @@ Rectangle {
     readonly property int _interval: 100
     property var arr_flow_rt: []
     property int _start_time: 0
+    property double prev_time: 0.0
     property int flow_x: 0
     property int flow_min_y: 0
+    property int av_flow_rt: 0
 
     property bool show_result_chart: false
 
@@ -22,20 +24,102 @@ Rectangle {
             reset_data()
             _start_time = 0
             show_result_chart = true
+            bar.visible = false;
         }
     }
 
     function start() {
         show_result_chart = false
+        av_flow_rt = 0
         flow_datas.splice(0, flow_datas.length);
         chart.clear();
         chart2.clear();
         chart_timer.start();
+        status_timer.start();
+        bar.visible = true;
+        appendLog("灵敏度 = "+ appSettings.aver_num + " 45-55 = "+ appSettings.use_real_red_line);
     }
 
     function reset_data() {
+        set_success_text(Common.HELXA_TIPS.init)
         flow_x = 0
         arr_flow_rt.splice(0, arr_flow_rt.length);
+    }
+
+    function set_success_text(text) {
+        txt.text = text
+        txt.color = 'black'
+    }
+
+    function set_failed_text(text) {
+        txt.text = text
+        txt.color = 'red'
+    }
+
+
+    Timer {
+        id: status_timer
+        repeat: true
+        interval: 200
+        onTriggered: ()=>{
+                         if(!root.in_helxa) {
+                             if(Common.is_helxa_failed(_status)) {
+                                 set_failed_text(Common.HELXA_TIPS.failed)
+                             } else {
+                                 set_success_text(Common.HELXA_TIPS.init)
+                             }
+
+                             status_timer.stop()
+                             return;
+                         }
+
+                         var now = new Date().getTime();
+                         var diff = now - prev_time;
+                         if(_status === Common.STATUS_FLOW1){
+                             console.log("准备开始吸气")
+                             set_success_text(Common.HELXA_TIPS.ready)
+                             prev_time = 0;
+                             bar.indeterminate = true;
+                         } else if(_status === Common.STATUS_FLOW2) {
+                             set_success_text(Common.HELXA_TIPS.start_inhale)
+                             bar.indeterminate = false;
+                             if(diff > 1000000){
+                                 root.appendLog("已经开始开始吸气")
+                                 prev_time = now;
+                             } else if(diff < 2500) {
+                                 bar.value = diff / 2500;
+                             } else {
+                                 root.appendLog("请开始呼气")
+                                 set_failed_text(Common.HELXA_TIPS.start_exhale)
+                                 bar.value = 0
+                             }
+                         } else if(_status === Common.STATUS_FLOW5 ||
+                                   _status === Common.STATUS_FLOW6 ||
+                                   _status === Common.STATUS_FLOW7 ||
+                                   _status === Common.STATUS_FLOW8) {
+                             if(!bar.indeterminate ){
+                                 bar.value += 1 / 30;
+                             }
+
+                             if (diff > 3000) {
+                                 prev_time = now
+                             } else if(diff > 500) {
+                                  bar.indeterminate = false;
+                                 if(av_flow_rt > 55) {
+                                     set_failed_text(Common.HELXA_TIPS.ex_flow)
+                                 } else if (av_flow_rt < 45) {
+                                     set_failed_text(Common.HELXA_TIPS.low_flow)
+                                 } else {
+                                     set_success_text(Common.HELXA_TIPS.keep)
+                                 }
+                                 prev_time = now
+                             }
+                         } else if(Common.is_helxa_analy(_status)){
+                             bar.indeterminate = true;
+                             set_success_text(Common.HELXA_TIPS.done)
+                             status_timer.stop()
+                         }
+                     }
     }
 
     Timer {
@@ -52,6 +136,7 @@ Rectangle {
                          }
                          // 结束
                          if(flow_x > 10 && Common.is_helxa_finish(_status)) {
+                             root.appendLog("测试结束 : "+ Common.get_status_info(_status))
                              finish();
                              return;
                          }
@@ -80,26 +165,29 @@ Rectangle {
 
         arr_flow_rt.push(flow_rt)
 
-        if (flow_rt > 55) {
-            //            root.showToastAndLog("呼气流量过高 : " + flow_rt + " 请控制")
-        }
-
-        var len = Math.min(arr_flow_rt.length, aver_num);
+        var len = Math.min(arr_flow_rt.length, appSettings.aver_num);
         let lastElements = arr_flow_rt.slice(-len);
         let sum = lastElements.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
         let average = sum / len;
 
+        av_flow_rt = average;
         flow_x +=  1;
 
-//        flow_datas.push({
-//                            "status": _status,
-//                            "x": flow_x,
-//                            "y": average
-//                        })
+        //        flow_datas.push({
+        //                            "status": _status,
+        //                            "x": flow_x,
+        //                            "y": average
+        //                        })
 
-        chart.append(flow_x, Common.mapValue(average));
+
+        if(appSettings.use_real_red_line){
+            chart.append(flow_x,  Common.mapValue(average));
+        } else {
+            chart.append(flow_x,  Common.mapValue2(average));
+        }
+
         if(average > 0) {
-            chart2.append(flow_x, Common.mapValue(average));
+            chart2.append(flow_x, flow_rt);
         }
     }
 
@@ -108,19 +196,53 @@ Rectangle {
         anchors.fill: parent
         spacing: 6
 
-        Row {
+        Rectangle {
             id: r1
             height: 40
             width: parent.width
             anchors.topMargin: 6
+            color:'#f0ffff'
 
             Text {
-                id: progress
-                text: ""
-                font.pixelSize: 14
-                color: 'red'
+                id: txt
+                anchors.centerIn: parent
+                text: Common.HELXA_TIPS.init
+                font.pixelSize: 16
+                font.bold: true
+                color: 'black'
+            }
+
+            ProgressBar {
+                width:  parent.width
+                height: 6
+                indeterminate: true
+                id: bar
+                visible: false
+            }
+            ComboBox {
+                id: cb
+                currentIndex: appSettings.aver_num - 1
+                height: parent.height *2 /3
+                anchors.verticalCenter: parent.verticalCenter
+                displayText: "灵敏度:" + currentText
+                model:[1,2,3,4,5]
+                onCurrentIndexChanged: {
+                    appSettings.aver_num = currentIndex + 1
+                }
+            }
+
+            CheckBox {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                checked: appSettings.use_real_red_line
+                text: "45-55"
+                onCheckedChanged: {
+                    appSettings.use_real_red_line = checked;
+                }
             }
         }
+
+
 
 
         Row {
@@ -242,8 +364,8 @@ Rectangle {
 
                 ValueAxis {
                     id: yAxis2
-                    min: 30
-                    max: 70
+                    min: 20
+                    max: 80
                     tickCount: 10
                     labelFormat: "%.0f"
                 }

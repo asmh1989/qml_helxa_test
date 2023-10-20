@@ -141,6 +141,16 @@ function is_helxa_finish(value) {
     return v === HELXA_STATUS_FINISH
 }
 
+function is_helxa_failed(value) {
+    if(value === STATUS_E1 || value === STATUS_E2
+            || value === STATUS_E3 || value === STATUS_E4
+            || value === STATUS_E8 || value === STATUS_E5
+            || value === STATUS_E7 || value === STATUS_E6 ){
+        return true
+    }
+
+    return false
+}
 
 const HELXA_STATUS_SAMPLE = 0
 const HELXA_STATUS_ANAY = 1
@@ -179,7 +189,9 @@ function get_status_info(value) {
         return "负压过大"
     } else if (value ===STATUS_END_STOP){
         return "手动停止"
-    } else {
+    } else if(value === STATUS_END_FINISH) {
+        return "测试完成"
+    }else {
         //        console.log("status = "+ value)
         return "手动停止"
     }
@@ -228,4 +240,17 @@ function mapValue(input) {
         return 84
     }
 }
+
+const HELXA_TIPS = {
+    init:"开始吸气前, 请先主动排空肺里的气",
+    ready: "请开始吸气(注意是吸仪器中的气!!)",
+    start_inhale: "吸气中, 不要停,保持2-3秒, 吸满!",
+    start_exhale: "请开始呼气, 流量尽可能保持在红线之间",
+    ex_flow:"呼气流量过高, 请慢一点...",
+    low_flow: "呼气流量过低, 加把油!",
+    keep:"很好, 请保持住, 均匀呼气",
+    done:"测试结束, 可以拿开仪器了,你真棒!",
+    failed:"测试失败, 不要气馁, 再来一次!"
+}
+
 
