@@ -5,7 +5,7 @@ import QtQuick.Controls
 import QtWebSockets
 
 import "common.js" as Common
-import QtCore
+import Qt.labs.settings 1.0
 
 Window  {
     id: root
@@ -275,7 +275,7 @@ Window  {
 
     Settings {
         id: appSettings
-        location: "./config.txt"
+        fileName: "./config.txt"
         property string url: "ws://192.168.2.184:8080"
         property int umd_state1: 201
         property int umd_state2: 250

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(qt-websockerts_demo VERSION 0.1 LANGUAGES CXX)
+project(qt-websockerts VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,15 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(OPENSSL_ROOT_DIR "C:/OpenSSL-Win64")
 
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS QML Gui Charts Quick Core QuickControls2 WebSockets)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Gui Charts Quick Core QuickControls2 WebSockets)
 
 
-qt_add_executable(appqt-websockerts_demo
+qt_add_executable(appqt-websockerts
     main.cpp
 )
 
-qt6_add_qml_module(appqt-websockerts_demo
-    URI qt-websockerts_demo
+qt6_add_qml_module(appqt-websockerts
+    URI qt-websockerts
     VERSION 1.0
     QML_FILES
         "Main.qml"
@@ -38,8 +38,8 @@ qt6_add_qml_module(appqt-websockerts_demo
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(appqt-websockerts_demo PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appqt-websockerts_demo
+set_target_properties(appqt-websockerts PROPERTIES
+#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appqt-websockerts
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
@@ -47,18 +47,17 @@ set_target_properties(appqt-websockerts_demo PROPERTIES
 )
 
 
-target_link_libraries(appqt-websockerts_demo
+target_link_libraries(appqt-websockerts
     PRIVATE Qt6::QuickControls2
     Qt6::Quick
     Qt6::Core
-    Qt6::Qml
     Qt6::WebSockets
     Qt6::Charts
     Qt::Gui
 )
 
 include(GNUInstallDirs)
-install(TARGETS appqt-websockerts_demo
+install(TARGETS appqt-websockerts
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

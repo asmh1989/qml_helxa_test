@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<FileIO,1>("FileIO",1,0,"FileIO");
 
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/qt-websockerts_demo/Main.qml"_qs);
+    const QUrl url(u"qrc:/qt-websockerts/Main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)
