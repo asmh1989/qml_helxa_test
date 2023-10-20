@@ -76,7 +76,7 @@ Window  {
                 appendLog("Socket Connecting = "+ header.url)
             }
             if(!connected) {
-                stop();
+                helxa_reset();
             }
         }
 
@@ -144,47 +144,6 @@ Window  {
         }
     }
 
-
-    /// 定时获取sample数据
-    Timer {
-        id: timer
-        repeat: true
-        interval: 100
-        onTriggered: ()=>{
-                         if(!timer2.running) {
-                             console.log("呼吸检测停止检测定时器 will start")
-                             timer2.start();
-                         }
-                         read_times += 1;
-                         _send_(_sample_value);
-
-                     }
-
-    }
-
-    Timer {
-        id: timer2
-        repeat: true
-        interval: 500
-        onTriggered: ()=>{
-                         if(sample_data && Common.is_helxa_finish(sample_data[Common.FUNC_STATUS])){
-                             console.log("呼吸检测停止检测定时器 will stop")
-                             appendLog("stop: read_times = "+ read_times+" update_count = "+ update_count)
-                             timer.stop();
-                             timer2.stop();
-                         }
-                     }
-    }
-
-    Timer {
-        id: refresh_timer
-        repeat: false
-        interval: 1200
-        onTriggered: ()=>{
-                         refresh();
-                     }
-    }
-
     function start_websocket(open) {
         socket.url = header.url;
         socket.active = open;
@@ -200,7 +159,7 @@ Window  {
     }
 
     function _send_(msg) {
-//        console.log("发送数据 "+ (new Date().getTime()))
+        //        console.log("发送数据 "+ (new Date().getTime()))
         socket.sendTextMessage(msg)
     }
 
@@ -220,7 +179,12 @@ Window  {
         }
     }
 
-    function stop() {
+    /// 呼吸检测重置
+    function helxa_reset() {
+        if(read_times > 100){
+            appendLog("helxa_stop: read_times = "+ read_times+" update_count = "+ update_count)
+        }
+
         read_times = 0;
         update_count = 0;
         timer.stop();
@@ -233,7 +197,7 @@ Window  {
             var msg = Common.get_start_helxa_req(command);
             appendLog("send: "+JSON.stringify(msg))
             send_json(msg)
-            stop();
+            helxa_reset();
             timer.restart()
             chart_start();
             console.log("start_helxa_test ...")
@@ -248,12 +212,12 @@ Window  {
         var msg = Common.get_stop_helxa_req();
         appendLog("send: "+JSON.stringify(msg))
         send_json(msg)
-        stop();
+        helxa_reset();
         refresh_timer.start();
     }
 
     function refresh() {
-        let msg = Common.get_sample_req(1);
+        let msg = Common.get_sample_req(30);
         send_json(msg);
     }
 
@@ -277,6 +241,38 @@ Window  {
             area.text += "\n"
             area.cursorPosition = area.length-1
         }
+    }
+
+    /// 定时获取sample数据
+    Timer {
+        id: timer
+        repeat: true
+        interval: 100
+        onTriggered: ()=>{
+                         if(!in_helxa) {
+                             helxa_reset();
+                             return;
+                         }
+
+                         read_times += 1;
+                         _send_(_sample_value);
+
+                     }
+    }
+
+
+    Timer {
+        id: refresh_timer
+        repeat: true
+        interval: 1000
+        onTriggered: ()=>{
+                         if(!Common.is_helxa_finish(_status)){
+                             console.log("refresh_timer refresh")
+                            refresh();
+                         } else {
+                             refresh_timer.stop();
+                         }
+                     }
     }
 
     Settings {

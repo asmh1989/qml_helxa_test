@@ -12,6 +12,8 @@ Rectangle {
     property int flow_x: 0
     property int flow_min_y: 0
 
+    property bool show_result_chart: false
+
 
     function finish() {
         if(chart_timer.running){
@@ -19,10 +21,12 @@ Rectangle {
             chart_timer.stop();
             reset_data()
             _start_time = 0
+            show_result_chart = true
         }
     }
 
     function start() {
+        show_result_chart = false
         flow_datas.splice(0, flow_datas.length);
         chart.clear();
         chart2.clear();
@@ -125,7 +129,7 @@ Rectangle {
 
 
             ChartView {
-                width: parent.width /2
+                width: show_result_chart ? parent.width/2 : parent.width
                 height: parent.height
                 id: char_view
                 antialiasing: true
@@ -148,7 +152,7 @@ Rectangle {
                 }
 
 
-                SplineSeries {
+                LineSeries {
                     id: chart
                     axisX: xAxis
                     axisY: yAxis
@@ -219,7 +223,9 @@ Rectangle {
                 antialiasing: true
                 legend.visible: false
 
-                SplineSeries {
+                visible: show_result_chart
+
+                LineSeries {
                     id: chart2
                     axisX: xAxis2
                     axisY: yAxis2

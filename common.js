@@ -187,6 +187,7 @@ function get_status_info(value) {
 }
 
 
+// 红线为40-60
 function mapValue2(input) {
     if(input < -80){
         return -19
@@ -207,6 +208,7 @@ function mapValue2(input) {
     }
 }
 
+// 红线为 45-55
 function mapValue(input) {
     if(input < -80){
         return -19
