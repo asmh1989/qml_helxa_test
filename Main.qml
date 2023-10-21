@@ -152,7 +152,7 @@ Window  {
             _send_(JSON.stringify(msg))
         } else {
             toast.show("websockets 已断开", 3000);
-            stop();
+            helxa_reset();
         }
     }
 
@@ -289,6 +289,8 @@ Window  {
 
         property int aver_num: 3
         property bool use_real_red_line: true
+
+        property bool use_anim_ball: true
 
     }
 

@@ -3,15 +3,13 @@ cmake_minimum_required(VERSION 3.16)
 project(qt-websockerts VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(OPENSSL_ROOT_DIR "C:/OpenSSL-Win64")
-
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Gui Charts Quick Core QuickControls2 WebSockets)
 
-
 qt_add_executable(appqt-websockerts
+    images.qrc
     main.cpp
 )
 
@@ -23,7 +21,7 @@ qt6_add_qml_module(appqt-websockerts
         "Header.qml"
 
     RESOURCES
-        "qmldir"
+#        "qmldir"
         "qtquickcontrols2.conf"
         QML_FILES common.js
         QML_FILES Status.qml
@@ -33,7 +31,16 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES Mychart.qml
         SOURCES fileio.h fileio.cpp
         QML_FILES Fenomode.qml
+        QML_FILES Ball.qml
 )
+
+
+
+
+# foreach(RESOURCE ${RESOURCE_FILES})
+#     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE} ${CMAKE_CURRENT_BINARY_DIR}/${RESOURCE} COPYONLY)
+# endforeach()
+
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

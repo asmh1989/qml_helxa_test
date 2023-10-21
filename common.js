@@ -241,6 +241,17 @@ function mapValue(input) {
     }
 }
 
+function is_exhale(_status){
+    if(_status === STATUS_FLOW5 ||
+            _status === STATUS_FLOW6 ||
+            _status === STATUS_FLOW7 ||
+            _status === STATUS_FLOW8) {
+        return true
+    } else {
+        return false
+    }
+}
+
 const HELXA_TIPS = {
     init:"开始吸气前, 请先主动排空肺里的气",
     ready: "请开始吸气(注意是吸仪器中的气!!)",

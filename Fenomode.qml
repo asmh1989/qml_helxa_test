@@ -1,8 +1,9 @@
 import QtQuick
 import QtQuick.Controls
+import QtCharts
+
 import "common.js" as Common
 
-import QtCharts
 Rectangle {
     property var flow_datas: []
     /// 用于画chart
@@ -16,7 +17,6 @@ Rectangle {
 
     property bool show_result_chart: false
 
-
     function finish() {
         if(chart_timer.running){
             console.log("chart  stop!!");
@@ -29,6 +29,10 @@ Rectangle {
     }
 
     function start() {
+        if(appSettings.use_anim_ball){
+            ball.reset()
+        }
+
         show_result_chart = false
         av_flow_rt = 0
         flow_datas.splice(0, flow_datas.length);
@@ -88,15 +92,15 @@ Rectangle {
                                  prev_time = now;
                              } else if(diff < 2500) {
                                  bar.value = diff / 2500;
+                                 if(appSettings.use_anim_ball) {
+                                    ball.append_scale(300/2500);
+                                 }
                              } else {
                                  root.appendLog("请开始呼气")
                                  set_failed_text(Common.HELXA_TIPS.start_exhale)
                                  bar.value = 0
                              }
-                         } else if(_status === Common.STATUS_FLOW5 ||
-                                   _status === Common.STATUS_FLOW6 ||
-                                   _status === Common.STATUS_FLOW7 ||
-                                   _status === Common.STATUS_FLOW8) {
+                         } else if(Common.is_exhale(_status)) {
                              if(!bar.indeterminate ){
                                  bar.value += 1 / 30;
                              }
@@ -173,18 +177,18 @@ Rectangle {
         av_flow_rt = average;
         flow_x +=  1;
 
-        //        flow_datas.push({
-        //                            "status": _status,
-        //                            "x": flow_x,
-        //                            "y": average
-        //                        })
+//        if(appSettings.use_anim_ball){
+            if(average > 0){
+                ball.append(average)
+            }
+//        } else {
+            if(appSettings.use_real_red_line){
+                chart.append(flow_x,  Common.mapValue(average));
+            } else {
+                chart.append(flow_x,  Common.mapValue2(average));
+            }
+//        }
 
-
-        if(appSettings.use_real_red_line){
-            chart.append(flow_x,  Common.mapValue(average));
-        } else {
-            chart.append(flow_x,  Common.mapValue2(average));
-        }
 
         if(average > 0) {
             chart2.append(flow_x, flow_rt);
@@ -232,12 +236,23 @@ Rectangle {
             }
 
             CheckBox {
+                id: cb2
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 checked: appSettings.use_real_red_line
                 text: "45-55"
                 onCheckedChanged: {
                     appSettings.use_real_red_line = checked;
+                }
+            }
+
+            CheckBox {
+                anchors.right: cb2.left
+                anchors.verticalCenter: parent.verticalCenter
+                checked: appSettings.use_anim_ball
+                text: "ball"
+                onCheckedChanged: {
+                    appSettings.use_anim_ball = checked;
                 }
             }
         }
@@ -249,93 +264,104 @@ Rectangle {
             width: parent.width
             height: parent.height - r1.height - 6
 
-
-            ChartView {
+            Item {
                 width: show_result_chart ? parent.width/2 : parent.width
                 height: parent.height
-                id: char_view
-                antialiasing: true
-                legend.visible: false
 
-                SplineSeries {
-                    color: 'red'
-                    XYPoint { x: 0; y: 30 }
-                    XYPoint { x: 120; y: 30 }
-                    axisX: xAxis
-                    axisY: yAxis
+                Ball {
+                    id: ball
+                    anchors.fill: parent
+                    visible: appSettings.use_anim_ball
                 }
 
-                SplineSeries {
-                    color: 'red'
-                    XYPoint { x: 0; y: 70 }
-                    XYPoint { x: 120; y: 70 }
-                    axisX: xAxis
-                    axisY: yAxis
+                ChartView {
+                    anchors.fill: parent
+                    id: char_view
+                    antialiasing: true
+                    legend.visible: false
+                    visible: !appSettings.use_anim_ball
+
+                    SplineSeries {
+                        color: 'red'
+                        XYPoint { x: 0; y: 30 }
+                        XYPoint { x: 120; y: 30 }
+                        axisX: xAxis
+                        axisY: yAxis
+                    }
+
+                    SplineSeries {
+                        color: 'red'
+                        XYPoint { x: 0; y: 70 }
+                        XYPoint { x: 120; y: 70 }
+                        axisX: xAxis
+                        axisY: yAxis
+                    }
+
+
+                    LineSeries {
+                        id: chart
+                        axisX: xAxis
+                        axisY: yAxis
+                        color: 'blue'
+                    }
+
+                    ValueAxis {
+                        id: xAxis
+                        min: 0
+                        max: 12 * 1000 / _interval
+                        tickCount: 11
+                        labelFormat: "%.0f"
+                    }
+
+                    CategoryAxis {
+                        id: yAxis
+                        min: -15  // 最小值，避免出现0值
+                        max: 85   // 最大值
+                        labelFormat: "%.0f"
+                        labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
+                        titleText: "FLOW_RT (ml/s)"
+
+                        CategoryRange {
+                            label: "-20"
+                            endValue: -15
+                        }
+                        CategoryRange {
+                            label: "0"
+                            endValue: 0
+                        }
+                        CategoryRange {
+                            label: "30"
+                            endValue: 15
+                        }
+                        CategoryRange {
+                            label: "45"
+                            endValue: 30
+                        }
+                        CategoryRange {
+                            label: "47"
+                            endValue: 40
+                        }
+                        CategoryRange {
+                            label: "50"
+                            endValue: 50
+                        }
+                        CategoryRange {
+                            label: "53"
+                            endValue: 60
+                        }
+
+                        CategoryRange {
+                            label: "55"
+                            endValue: 70
+                        }
+
+                        CategoryRange {
+                            label: "70"
+                            endValue: 85
+                        }
+                    }
                 }
 
-
-                LineSeries {
-                    id: chart
-                    axisX: xAxis
-                    axisY: yAxis
-                    color: 'blue'
-                }
-
-                ValueAxis {
-                    id: xAxis
-                    min: 0
-                    max: 12 * 1000 / _interval
-                    tickCount: 11
-                    labelFormat: "%.0f"
-                }
-
-                CategoryAxis {
-                    id: yAxis
-                    min: -15  // 最小值，避免出现0值
-                    max: 85   // 最大值
-                    labelFormat: "%.0f"
-                    labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
-                    titleText: "FLOW_RT (ml/s)"
-
-                    CategoryRange {
-                        label: "-20"
-                        endValue: -15
-                    }
-                    CategoryRange {
-                        label: "0"
-                        endValue: 0
-                    }
-                    CategoryRange {
-                        label: "30"
-                        endValue: 15
-                    }
-                    CategoryRange {
-                        label: "45"
-                        endValue: 30
-                    }
-                    CategoryRange {
-                        label: "47"
-                        endValue: 40
-                    }
-                    CategoryRange {
-                        label: "50"
-                        endValue: 50
-                    }
-                    CategoryRange {
-                        label: "53"
-                        endValue: 60
-                    }
-
-                    CategoryRange {
-                        label: "55"
-                        endValue: 70
-                    }
-
-                    CategoryRange {
-                        label: "70"
-                        endValue: 85
-                    }
-                }
             }
 
             ChartView {
