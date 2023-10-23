@@ -5,6 +5,9 @@ import QtCharts
 
 import "common.js" as Common
 import FileIO
+
+import "./view"
+
 Rectangle {
     property var arr_umd1: []
     property int umd1_x: 0
@@ -17,6 +20,36 @@ Rectangle {
     property int flow_x: 0
     property int flow_min_y: 0
 
+    property string _time_name: ""
+    property var arr_data_header: ["测试ID","实时流量","检测器实时"]
+    property var result_header:["仪器编号","测试日期","室内/箱内温度/℃", "环境温度/℃","环境湿度RH/%","检测器温度/℃","气袋编号","气袋浓度/ppb","测量均值差","测试ID"]
+
+    function save_to_file(diff) {
+        var obj = root.sample_data;
+        var trace_umd1_temp = obj[Common.TRACE_UMD1_TEMP] / 100.0
+        var ambient_temp = obj[Common.AMBIENT_TEMP] / 100.0
+        var ambient_humi = obj[Common.AMBIENT_HUMI]
+        var result_data = [appSettings.mac_code,
+                           Common.formatDate(),
+                           appSettings.indoor_temp,
+                           ambient_temp,
+                           ambient_humi,
+                           trace_umd1_temp,
+                           appSettings.puppet_num,
+                           appSettings.puppet_con,
+                           diff,
+                           appSettings.test_id
+                ];
+        var res = myFile.saveToCsv(get_result_path(), result_header, [result_data])
+        root.appendLog(res);
+
+        var data_ = arr_flow_rt.map((element, index) => [appSettings.test_id,element, arr_umd1[index]]);
+
+        var res2 = myFile.saveToCsv(get_flow_rt_path(), arr_data_header, data_)
+        root.appendLog(res2);
+        appSettings.test_id+=1
+    }
+
     function finish() {
         if(chart_timer.running){
             showResult();
@@ -27,10 +60,23 @@ Rectangle {
         }
     }
 
+    function get_result_prefix(){
+        return "record_sno/"+appSettings.mac_code+"-"+_time_name
+    }
+
+    function get_result_path() {
+        return get_result_prefix()+"/result.csv"
+    }
+
+    function get_flow_rt_path() {
+        return get_result_prefix()+"/data.csv"
+    }
 
     function showResult() {
         var success = _status === Common.STATUS_END_FINISH
         var msg = ""
+//        save_to_file(0);
+
         if(success) {
             // 测试完成
             var len = arr_umd1.length;
@@ -43,10 +89,9 @@ Rectangle {
                 sum = lastElements.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
                 var av2 = sum / lastElements.length;
                 var r = Math.abs(av1 - av2).toFixed(2);
-                msg = "测试成功: umd1均值差 = " +r + " (ppb)"
-                var content = arr_umd1.join(',')+","+r
-                myFile.write(content);
-                root.appendLog("测试结果已保存, 见文件: "+ myFile.source)
+                msg = "测试成功: 气袋浓度("+appSettings.puppet_num+") umd1均值差 = " +r + " (ppb)"
+                save_to_file(r);
+
             } else {
                 success = false;
                 msg = "帧数太少!"
@@ -84,6 +129,7 @@ Rectangle {
                          }
                          // 结束
                          if(flow_x > 10 && Common.is_helxa_finish(_status)) {
+                             root.appendLog("测试结束 : "+ Common.get_status_info(_status))
                              finish();
                              return;
                          }
@@ -102,20 +148,13 @@ Rectangle {
 
     function addFlowRt(obj) {
         var flow_rt = obj[Common.FLOW_RT] / 10.0
-        if(Common.is_helxa_analy(_status)) {
-            arr_flow_rt.splice(0, arr_flow_rt.length);
-            return;
-        }
-
-        if(arr_flow_rt.length !== flow_x ){
-            return;
-        }
+// 从头加到尾
+//        if(Common.is_helxa_analy(_status)) {
+//            arr_flow_rt.splice(0, arr_flow_rt.length);
+//            return;
+//        }
 
         arr_flow_rt.push(flow_rt)
-
-        if (flow_rt > 55) {
-            root.showToastAndLog("呼气流量过高 : " + flow_rt + " 请控制")
-        }
 
         var nums = _interval / 100;
         var len = Math.min(arr_flow_rt.length, nums);
@@ -139,7 +178,6 @@ Rectangle {
         chart.append(flow_x, average);
     }
 
-
     function addUmd1(obj) {
         var trace_umd1 = obj[Common.TRACE_UMD1]
         arr_umd1.push(trace_umd1)
@@ -151,8 +189,8 @@ Rectangle {
         let average = sum / len;
         umd1_x += 1;
 
-        if(umd1_x > umdAxisX.max -50 ){
-            umdAxisX.max += 50
+        if(umd1_x > umdAxisX.max -10 ){
+            umdAxisX.max += 10
         }
 
         if (umd1_min_y <average ) {
@@ -181,11 +219,58 @@ Rectangle {
     Item {
         anchors.fill: parent
 
+        Row {
+            height: 28
+            width:400
+            anchors.horizontalCenter: parent.horizontalCenter
+            z: 2
+            spacing: 6
+
+
+            Myedit {
+                id: ed1
+                name: "室内/箱内温度值"
+                value: appSettings.indoor_temp
+                height: parent.height
+                edWidth: 48
+                onValueChanged: {
+                    appSettings.indoor_temp = value
+                }
+            }
+            Myedit {
+                id: ed2
+                name: "气袋编号"
+                value: appSettings.puppet_num
+                height: parent.height
+                edWidth: 72
+                onValueChanged: {
+                    appSettings.puppet_num = value
+                }
+            }
+            Myedit {
+                name: "气袋浓度"
+                value: appSettings.puppet_con
+                height: parent.height
+                edWidth: 48
+                onValueChanged: {
+                    appSettings.puppet_con = value
+                }
+            }
+            Myedit {
+                name: "仪器码"
+                value: appSettings.mac_code
+                height: parent.height
+                edWidth: 48
+                onValueChanged: {
+                    appSettings.mac_code = value
+                }
+            }
+        }
+
         ChartView {
             width: parent.width
             height: parent.height / 2
             id: char_view
-            //            backgroundColor: 'green'
             antialiasing: true
             legend.visible: false
 
@@ -220,7 +305,6 @@ Rectangle {
             width: parent.width
             height: parent.height / 2
             id: chart_umd1
-            //            backgroundColor: 'blue'
             antialiasing: true
             legend.visible: false
 
@@ -263,6 +347,7 @@ Rectangle {
         onError: console.log(msg)
     }
 
+
     Component.onCompleted: {
         var now = new Date();
         var year = now.getFullYear();
@@ -271,6 +356,8 @@ Rectangle {
         var hours = String(now.getHours()).padStart(2, '0');
         var minutes = String(now.getMinutes()).padStart(2, '0');
         var seconds = String(now.getSeconds()).padStart(2, '0');
-        myFile.source = "SNO_"+year + '_' + month + '_' + day + '_' + hours + '_' + minutes + '_' + seconds+".txt";
+        _time_name = year+month+ day + '-' + hours + minutes + seconds;
     }
+
+
 }

@@ -103,7 +103,7 @@ Item {
         ball1.x = Math.min(x_ * x_step + 10, parent_view.width - 10);
         ball1.y = Math.max(0,parent_view.height*0.8 -  y_step * map_value(y_) - 10)
 
-        console.log("scale = "+ scale_ +  ", ("+x_ +","+ y_+")"+ " = "+ "("+ball1.x +","+ ball1.y+")")
+//        console.log("scale = "+ scale_ +  ", ("+x_ +","+ y_+")"+ " = "+ "("+ball1.x +","+ ball1.y+")")
 
     }
 

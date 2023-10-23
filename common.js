@@ -99,7 +99,8 @@ var _sample_values = [
             FUNC_NAME,
             AMBIENT_TEMP,
             TRACE_UMD1_TEMP,
-            TRACE_UMD1
+            TRACE_UMD1,
+            AMBIENT_HUMI
         ]
 
 function get_sample_req(delay) {
@@ -262,6 +263,19 @@ const HELXA_TIPS = {
     keep:"很好, 请保持住, 均匀呼气",
     done:"测试结束, 可以拿开仪器了,你真棒!",
     failed:"测试失败, 不要气馁, 再来一次!"
+}
+
+function formatDate() {
+    var currentDate = new Date();
+    var year = currentDate.getFullYear();
+    var month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+    var day = currentDate.getDate().toString().padStart(2, '0');
+    var hours = currentDate.getHours().toString().padStart(2, '0');
+    var minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    var seconds = currentDate.getSeconds().toString().padStart(2, '0');
+
+    var formattedDate = year + '-' + month + '-' + day + '.' + hours + ':' + minutes+":"+seconds;
+    return formattedDate;
 }
 
 

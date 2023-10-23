@@ -6,7 +6,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Gui Charts Quick Core QuickControls2 WebSockets)
+find_package(Qt6 6.3 REQUIRED COMPONENTS Gui Charts Quick Core QuickControls2 WebSockets)
+
+if(QT_KNOWN_POLICY_QTP0001)
+    qt_policy(SET QTP0001 OLD)
+endif()
 
 qt_add_executable(appqt-websockerts
     images.qrc
@@ -25,13 +29,15 @@ qt6_add_qml_module(appqt-websockerts
         "qtquickcontrols2.conf"
         QML_FILES common.js
         QML_FILES Status.qml
-        QML_FILES Mylabel.qml
+#        QML_FILES Mylabel.qml
         QML_FILES Toast.qml
         QML_FILES ToastManager.qml
-        QML_FILES Mychart.qml
+        QML_FILES Sno.qml
         SOURCES fileio.h fileio.cpp
         QML_FILES Fenomode.qml
         QML_FILES Ball.qml
+        QML_FILES view/Mylabel.qml
+        QML_FILES view/Myedit.qml
 )
 
 

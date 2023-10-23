@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "common.js" as Common
 
+import "./view"
+
 Rectangle{
     color:Qt.rgba(100,100, 100, 100)
     width: parent.width
@@ -10,17 +12,17 @@ Rectangle{
 
     property bool starting: false
     //    property var data
-    anchors.margins: 4
 
     function dataChanged(obj) {
         trace_umd1_temp.value = obj[Common.TRACE_UMD1_TEMP] / 100.0
         func_name.value = obj[Common.FUNC_NAME]
         func_status.value = _status
         ambient_temp.value = obj[Common.AMBIENT_TEMP] / 100.0
+        ambient_humi.value = obj[Common.AMBIENT_HUMI]
         flow_rt.value = obj[Common.FLOW_RT] / 10.0
         trace_umd1.value = obj[Common.TRACE_UMD1]
         starting = !Common.is_helxa_finish(func_status.value)
-        update_time.value = obj["update_time"]
+        update_time.value = new Date(obj["update_time"]).toISOString()
     }
 
     Column  {
@@ -42,24 +44,31 @@ Rectangle{
 
                 Mylabel {
                     id: ambient_temp
-                    name:"环境温度值"
+                    name:"环境温度"
                     value:"0"
                     unit: "°C"
+                }
+                Mylabel {
+                    id: ambient_humi
+                    name:"环境湿度"
+                    value:"0"
+                    unit: "%"
                 }
 
                 Mylabel {
                     id: flow_rt
-                    name:"实时采样流量值"
+                    name:"实时采样流量"
                     value:"0"
                     unit: "mL/s"
                 }
 
                 Mylabel {
                     id: trace_umd1
-                    name:"检测器1实时值"
+                    name:"检测器1实时"
                     value:"0"
                     unit: "ppb"
                 }
+
 
                 Mylabel {
                     id: func_name
@@ -87,24 +96,25 @@ Rectangle{
         }
 
         Rectangle {
-            height: 30
+            height: 20
             width: parent.width
-            anchors.margins: 4
-            Row {
+
+
+            Mylabel {
                 anchors.centerIn: parent
-                spacing: 4
-
-                BusyIndicator {
-                        visible: starting
-                }
-
-                Mylabel {
-                    id: func_status
-                    name:"呼气功能状态"
-                    value:""
-                    unit: ""
-                }
+                id: func_status
+                name:"呼气功能状态"
+                value:""
+                unit: ""
             }
+
+            BusyIndicator {
+                visible: starting
+                anchors.right: func_status.left
+                anchors.rightMargin: 4
+                height: parent.height
+            }
+
         }
 
     }

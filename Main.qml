@@ -13,6 +13,8 @@ Window  {
     height: 720
     visible: true
     title: qsTr("em-exhale")
+    x: appSettings.sceen_x
+    y: appSettings.sceen_y
 
     readonly property int margin: 10
     readonly property string _sample_value: JSON.stringify(Common.get_sample_req(0))
@@ -29,6 +31,15 @@ Window  {
 
     ToastManager {
         id: toast
+    }
+
+    Component.onDestruction: {
+        appSettings.sceen_x = root.x
+        appSettings.sceen_y = root.y
+    }
+
+    Component.onCompleted: {
+
     }
 
 
@@ -105,7 +116,7 @@ Window  {
                 anchors.bottom: footer.top
                 anchors.margins: margin  / 2
 
-                Mychart {
+                Sno {
                     id: my_chart
                     anchors.fill: parent
                     visible: header.is_sno()
@@ -192,6 +203,22 @@ Window  {
 
     function start_helxa_test(command) {
         if(!timer.running){
+            if(header.is_sno()){
+                if(appSettings.mac_code.length === 0){
+                    showToast("请填入仪器码!");
+                    return;
+                } else if(appSettings.puppet_num.length === 0){
+                    showToast("请填入气袋编码!");
+                    return;
+                } else if(appSettings.puppet_con.length === 0) {
+                    showToast("请填入气袋浓度!");
+                    return;
+                } else if(appSettings.indoor_temp.length === 0) {
+                    showToast("请填入室内/箱内温度!");
+                    return;
+                }
+            }
+
             var msg = Common.get_start_helxa_req(command);
             appendLog("send: "+JSON.stringify(msg))
             send_json(msg)
@@ -276,7 +303,7 @@ Window  {
     Settings {
         id: appSettings
         fileName: "./config.txt"
-        property string url: "ws://192.168.2.184:8080"
+        property string url: "ws://192.168.2.33:8080"
         property int umd_state1: 201
         property int umd_state2: 250
         property int umd_state3: 451
@@ -291,6 +318,22 @@ Window  {
         property bool use_real_red_line: true
 
         property bool use_anim_ball: true
+
+        property int sceen_x: 0
+        property int sceen_y: 0
+
+        // 室内温度
+        property string indoor_temp: ""
+        // 气袋编号
+        property string puppet_num: ""
+        // 气袋浓度
+        property string puppet_con:""
+        // 仪器码
+        property string mac_code:""
+
+        // 测试任务id
+        property int test_id: 1
+
 
     }
 

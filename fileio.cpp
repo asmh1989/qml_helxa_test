@@ -1,6 +1,7 @@
 #include "fileio.h"
 #include <QFile>
 #include <QTextStream>
+#include <QDir>
 
 FileIO::FileIO(QObject *parent) :
     QObject(parent)
@@ -65,14 +66,61 @@ bool FileIO::write(const QString& data)
         return false;
 
     QFile file(mSource);
+
     //"append" allows adding a new line instead of rewriting the file
     if (!file.open(QFile::WriteOnly | QIODevice::Text | QFile::Append))
         return false;
 
     QTextStream out(&file);
     out << data <<"\n";
-
     file.close();
 
     return true;
+}
+
+
+QString FileIO::saveToCsv(const QString &filePath, const QStringList &headers, const QList<QStringList> &data) {
+
+    QFile file(filePath);
+
+    QFileInfo fileInfo(filePath);
+    QDir dir(fileInfo.dir().absolutePath());
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream.setEncoding(QStringConverter::Utf8);
+
+        // 写入表头
+        if (file.size() == 0) {
+            for (auto i = 0; i < headers.size(); i++) {
+
+                stream << headers[i];
+                if(i != headers.size() - 1){
+                    stream<< ",";
+                }
+            }
+            stream << "\n";
+        }
+
+        // 写入数据
+        for (const QStringList &row : data) {
+            for (auto i = 0; i < row.size(); i++) {
+
+                stream << row[i];
+                if(i != row.size() - 1){
+                    stream<< ",";
+                }
+            }
+            stream << "\n";
+        }
+
+        file.close();
+        return tr("文件已保存: %1").arg(fileInfo.absoluteFilePath());
+    } else {
+        return tr("文件写入错误: %1").arg(fileInfo.absoluteFilePath());
+    }
+
 }

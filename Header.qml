@@ -5,7 +5,7 @@ import "common.js" as Common
 
 Rectangle{
     color:Qt.rgba(100,100, 100, 100)
-    height: is_sno() ? 72 : 32
+    height: is_sno() ? 64 : row1.height
     width: parent.width
 
     property alias url: tf.text
@@ -23,7 +23,7 @@ Rectangle{
         Row {
             id: row1
             spacing: 6
-            height: 32
+            height: 28
             anchors.horizontalCenter: parent.horizontalCenter
 
             TextField {
@@ -105,7 +105,7 @@ Rectangle{
         Row {
             id: row2
             spacing: 6
-            height: 32
+            height: row1.height
             visible: is_sno()
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -116,6 +116,7 @@ Rectangle{
 
             TextField {
                 id: t_times
+                height: parent.height
                 text: appSettings.offline_times
                 validator: IntValidator {bottom: 2; top: 999;}
             }
@@ -128,11 +129,13 @@ Rectangle{
             TextField {
                 id: t_interval
                 text: appSettings.offline_interval
+                height: parent.height
                 validator: IntValidator {bottom: 0; top: 99;}
             }
 
             Button {
                 text: "离线循环"
+                height: parent.height
                 enabled: times === 0
                 onClicked:  {
                     save_cache()
@@ -142,6 +145,8 @@ Rectangle{
 
             Button {
                 text: "结束循环"
+                height: parent.height
+
                 onClicked: {
                     save_cache()
                     stop_test()
@@ -157,21 +162,26 @@ Rectangle{
             TextField {
                 id: t1
                 text: appSettings.umd_state1
+                height: parent.height
+
                 validator: IntValidator {bottom: 0; top: 300;}
             }
             TextField {
                 id: t2
+                height: parent.height
                 text: appSettings.umd_state2
                 validator: IntValidator {bottom: 50; top: 400;}
 
             }
             TextField {
                 id: t3
+                height: parent.height
                 text: appSettings.umd_state3
                 validator: IntValidator {bottom: 350; top: 500;}
             }
             TextField {
                 id: t4
+                height: parent.height
                 text: appSettings.umd_state4
                 validator: IntValidator {bottom: 450; top: 650;}
             }

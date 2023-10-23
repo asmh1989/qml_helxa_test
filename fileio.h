@@ -18,6 +18,8 @@ public:
     Q_INVOKABLE bool write(const QString& data);
     Q_INVOKABLE int getNumberOfLines();
 
+    Q_INVOKABLE QString saveToCsv(const QString &filePath, const QStringList &headers, const QList<QStringList> &data);
+
     QString source() { return mSource; }
 
 public slots:

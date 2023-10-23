@@ -19,7 +19,6 @@ Row {
 
 
     Text {
-//        text: "°C"
         text: unit
     }
 
