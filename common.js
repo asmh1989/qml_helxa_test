@@ -214,7 +214,7 @@ function mapValue2(input) {
     } else if ( input <= 60) {       // 40, 60 => 30, 70
         return 30 + (input - 40) * 2.5;
     } else if (input <= 84) {       // 60, 85 => 70, 83
-        return 70 + (input -60) * 13 / 25;
+        return 70 + (input -60) * 13 / 24;
     }  else  {
         return 84
     }
@@ -233,7 +233,7 @@ function mapValue(input) {
     } else if (input <= 45) {       // 20, 40 => 15,30
         return 15 + (input - 20) * 15 / 25;
     } else if ( input <= 55) {       // 45, 55 => 30, 70
-        return 30 + (input -45) * 5;
+        return 30 + (input -45) * 4;
     } else if (input <= 84) {       // 55, 84 => 70, 83
         return 70 + (input - 55) * 13 / 29;
     }  else  {
