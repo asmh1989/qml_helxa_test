@@ -213,9 +213,13 @@ Item {
     }
 
     function refresh_label() {
-        var dd = test_umd_av.filter((e, i) => arr_ids_enable[i]).join("/")
+        var dd = test_umd_av.filter((e, i) => arr_ids_enable[i])
 
-        pdd.text = "均值差: " + dd
+        if (dd.length === 0) {
+            pdd.text = ""
+        } else {
+            pdd.text = "均值差: " + dd.join("/")
+        }
     }
 
     function refresh() {

@@ -22,7 +22,7 @@ Rectangle {
         flow_rt.value = obj[Common.FLOW_RT] / 10.0
         trace_umd1.value = obj[Common.TRACE_UMD1]
         starting = !Common.is_helxa_finish(func_status.value)
-        update_time.value = new Date(obj["update_time"]).toISOString()
+        update_time.value = Common.formatDate2(new Date(obj["update_time"]))
     }
 
     Column {
