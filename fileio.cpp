@@ -124,3 +124,51 @@ QString FileIO::saveToCsv(const QString &filePath, const QStringList &headers, c
     }
 
 }
+
+
+void FileIO::readCsvFile(const QString &filePath, QList<QStringList> &csvData) {
+
+    QFile file(filePath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+
+        // 跳过头部（第一行）
+        in.readLine();
+
+        // 读取并解析CSV数据
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            QStringList fields = line.split(',');
+
+            // 添加数据到csvData
+            csvData.append(fields);
+        }
+
+        file.close();
+        qDebug() << "CSV file successfully read: " << filePath;
+    } else {
+        emit error(tr("错误, 文件不存在: %1").arg(filePath));
+    }
+
+}
+
+
+void FileIO::readCsv(const QString &filePath) {
+    QDir dir(filePath);
+    if(dir.exists()) {
+        mResult.clear();
+        mData.clear();
+        readCsvFile(dir.filePath("result.csv"), mResult);
+        readCsvFile(dir.filePath("data.csv"), mData);
+    } else {
+        emit error(tr("该目录不存在: %1").arg(filePath));
+    }
+}
+
+QString FileIO::selectFile(const QUrl &url){
+    auto path = url.toLocalFile();
+    QFileInfo info(path);
+    auto path2= info.dir().absolutePath();
+//    readCsv(path2);
+    return path2;
+}

@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>img/balloon.png</file>
         <file>img/bg_none.png</file>
-        <file>view/MyEdit.qml</file>
+        <file>img/back.png</file>
+        <file>img/menu.png</file>
     </qresource>
 </RCC>

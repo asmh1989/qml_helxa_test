@@ -36,8 +36,10 @@ qt6_add_qml_module(appqt-websockerts
         SOURCES fileio.h fileio.cpp
         QML_FILES Fenomode.qml
         QML_FILES Ball.qml
-        QML_FILES view/Mylabel.qml
-        QML_FILES view/Myedit.qml
+        QML_FILES view/MyLabel.qml
+        QML_FILES view/MyEdit.qml
+        QML_FILES Snodataview.qml
+        QML_FILES Rootview.qml
 )
 
 

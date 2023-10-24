@@ -5,14 +5,14 @@ import "common.js" as Common
 
 import "./view"
 
-Rectangle{
-    color:Qt.rgba(100,100, 100, 100)
+Rectangle {
+    color: Qt.rgba(100, 100, 100, 100)
     width: parent.width
     height: 70
 
     property bool starting: false
-    //    property var data
 
+    //    property var data
     function dataChanged(obj) {
         trace_umd1_temp.value = obj[Common.TRACE_UMD1_TEMP] / 100.0
         func_name.value = obj[Common.FUNC_NAME]
@@ -25,7 +25,7 @@ Rectangle{
         update_time.value = new Date(obj["update_time"]).toISOString()
     }
 
-    Column  {
+    Column {
         anchors.fill: parent
 
         Rectangle {
@@ -35,62 +35,58 @@ Rectangle{
             Row {
                 anchors.centerIn: parent
                 spacing: 8
-                Mylabel {
+                MyLabel {
                     id: trace_umd1_temp
-                    name:"检测器环境温度1"
-                    value:"0"
+                    name: "检测器环境温度1"
+                    value: "0"
                     unit: "°C"
                 }
 
-                Mylabel {
+                MyLabel {
                     id: ambient_temp
-                    name:"环境温度"
-                    value:"0"
+                    name: "环境温度"
+                    value: "0"
                     unit: "°C"
                 }
-                Mylabel {
+                MyLabel {
                     id: ambient_humi
-                    name:"环境湿度"
-                    value:"0"
+                    name: "环境湿度"
+                    value: "0"
                     unit: "%"
                 }
 
-                Mylabel {
+                MyLabel {
                     id: flow_rt
-                    name:"实时采样流量"
-                    value:"0"
+                    name: "实时采样流量"
+                    value: "0"
                     unit: "mL/s"
                 }
 
-                Mylabel {
+                MyLabel {
                     id: trace_umd1
-                    name:"检测器1实时"
-                    value:"0"
+                    name: "检测器1实时"
+                    value: "0"
                     unit: "ppb"
                 }
 
-
-                Mylabel {
+                MyLabel {
                     id: func_name
-                    name:"呼气功能指令"
-                    value:""
+                    name: "呼气功能指令"
+                    value: ""
                     unit: ""
                 }
-
-
             }
-
         }
 
         Rectangle {
             height: 20
             width: parent.width
 
-            Mylabel {
+            MyLabel {
                 anchors.centerIn: parent
                 id: update_time
-                name:"更新时间"
-                value:""
+                name: "更新时间"
+                value: ""
                 unit: ""
             }
         }
@@ -99,12 +95,11 @@ Rectangle{
             height: 20
             width: parent.width
 
-
-            Mylabel {
+            MyLabel {
                 anchors.centerIn: parent
                 id: func_status
-                name:"呼气功能状态"
-                value:""
+                name: "呼气功能状态"
+                value: ""
                 unit: ""
             }
 
@@ -114,8 +109,6 @@ Rectangle{
                 anchors.rightMargin: 4
                 height: parent.height
             }
-
         }
-
     }
 }
