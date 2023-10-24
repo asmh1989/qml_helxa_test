@@ -7,15 +7,31 @@ import QtCharts
 
 import "common.js" as Common
 import FileIO
+import "./view"
 
 Item {
 
     property string dir_name: data_dir_name
+    // 测试结果
     property var arr_result: []
+    // 测试数据
     property var arr_data: []
+    // 测试id 列表
     property var arr_ids: []
+    // 测试任务id, 是否显示列表
     property var arr_ids_enable: []
+
+    // 缓存
     property var test_umd_av: []
+
+    // result 中的气袋浓度
+    property var result_obj: []
+    property int umds: 710
+
+    property var result_header: ["仪器编号", "测试日期", "室内/箱内温度/℃", "环境温度/℃", "环境湿度RH/%", "检测器温度/℃", "气袋编号", "气袋浓度/ppb", "测量均值差", "测试ID", "state1", "state2", "state3", "state4"]
+
+    // 新的数据
+    property var new_result: []
 
     Action {
         id: navigateBackAction
@@ -46,7 +62,7 @@ Item {
             Label {
                 id: titleLabel
                 text: "离线数据分析"
-                font.pixelSize: 20
+                font.pixelSize: 16
                 elide: Label.ElideRight
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
@@ -67,12 +83,21 @@ Item {
                             fileDialog.open()
                         }
                     }
+
+                    Action {
+                        enabled: row_slide.visible
+                        text: qsTr("隐藏帧间隔")
+                        onTriggered: {
+                            row_slide.visible = false
+                        }
+                    }
                 }
             }
         }
     }
 
     ColumnLayout {
+        id: co
         width: window.width
         anchors {
             top: bar.bottom
@@ -80,8 +105,8 @@ Item {
         }
 
         spacing: 6
-
         Label {
+            id: label
             text: "当前分析目录: " + dir_name
             Layout.alignment: Qt.AlignHCenter
         }
@@ -90,7 +115,7 @@ Item {
             visible: arr_ids.length > 0
             width: parent.width
             Layout.alignment: Qt.AlignHCenter
-            height: 30
+            height: 24
             spacing: 6
 
             Repeater {
@@ -120,9 +145,9 @@ Item {
         Rectangle {
             Layout.fillHeight: true
             width: parent.width
-            //            color: 'green'
+
             ChartView {
-                width: parent.width
+                width: (row_slide.visible ? parent.width - row_slide.width : parent.width)
                 height: parent.height / 2
                 id: flow_chart
                 antialiasing: true
@@ -145,6 +170,70 @@ Item {
                     tickCount: 6
                     labelFormat: "%.0f"
                     titleText: "FLOW_RT (ml/s)"
+                }
+            }
+
+            Item {
+                id: row_slide
+                visible: show_umd_state
+                height: 60
+                width: 200
+                anchors {
+                    rightMargin: 6
+                    right: parent.right
+                    verticalCenter: flow_chart.verticalCenter
+                }
+                z: 2
+
+                onVisibleChanged: {
+                    //                    console.log("visible changed...")
+                    rs1.first.value = appSettings.umd_state1
+                    rs2.second.value = appSettings.umd_state2
+                    rs2.first.value = appSettings.umd_state3
+                    rs2.second.value = appSettings.umd_state4
+                }
+
+                MySlide {
+                    height: 36
+                    id: rs1
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    from: 50
+                    to: umds - 200
+                    first.value: appSettings.umd_state1
+                    second.value: appSettings.umd_state2
+                    onValueChanged: {
+                        refresh_label()
+                    }
+                }
+
+                MySlide {
+                    id: rs2
+                    height: rs1.height
+                    anchors.left: parent.left
+                    anchors.top: rs1.bottom
+                    from: 200
+                    to: umds - 1
+                    first.value: appSettings.umd_state3
+                    second.value: appSettings.umd_state4
+                    onValueChanged: {
+                        refresh_label()
+                    }
+                }
+
+                Button {
+                    text: "保存"
+                    anchors {
+                        top: rs2.bottom
+                        horizontalCenter: rs2.horizontalCenter
+                    }
+
+                    onClicked: {
+
+                        var res = myFile.saveToCsv(dir_name + "/umd_avg.csv",
+                                                   result_header, [new_result])
+                        console.log("save = " + res)
+                    }
                 }
             }
 
@@ -186,10 +275,14 @@ Item {
 
     FileIO {
         id: myFile
-        onError: {
-            console.log(msg)
-            showToast(msg)
-        }
+        onError: msg => {
+                     console.log(msg)
+                     showToast(msg)
+                 }
+    }
+
+    function is_only_one() {
+        row_slide.visible = arr_ids_enable.filter((e, i) => e).length === 1
     }
 
     FileDialog {
@@ -213,13 +306,44 @@ Item {
     }
 
     function refresh_label() {
-        var dd = test_umd_av.filter((e, i) => arr_ids_enable[i])
+        var dd = test_umd_av.map((e, i) => result_obj[i] + "-" + e).filter(
+                    (e, i) => arr_ids_enable[i])
 
         if (dd.length === 0) {
             pdd.text = ""
         } else {
-            pdd.text = "均值差: " + dd.join("/")
+
+            if (dd.length === 1) {
+                var state1 = rs1.l_value
+                var state2 = rs1.r_value
+                var state3 = rs2.l_value
+                var state4 = rs2.r_value
+                var test_id = arr_ids.filter((e, i) => arr_ids_enable[i])[0]
+                var pup_con = result_obj.filter((e, i) => arr_ids_enable[i])[0]
+
+                var arr_umd = arr_data.filter(e => e[0] === test_id).map(
+                            e => parseInt(e[2]))
+                umds = arr_umd.length
+
+                dd[0] = Common.umd_avg(state1, state2, state3, state4, arr_umd)
+                //                console.log("pup_con = " + pup_con + " " + state1 + "," + state2
+                //                            + "," + state3 + "," + state4 + " length = " + umds
+                //                            + " id = " + test_id + " avg = " + dd[0])
+                pdd.text = "气袋浓度-均值差: " + pup_con + "-" + dd[0]
+                new_result = arr_result.filter(
+                            (e, i) => arr_ids_enable[i])[0].map(e => e)
+                new_result[new_result.length - 2] = dd[0]
+                new_result.push(state1)
+                new_result.push(state2)
+                new_result.push(state3)
+                new_result.push(state4)
+                //                console.log("new_result = " + JSON.stringify(new_result))
+            } else {
+                pdd.text = "气袋浓度-均值差: " + dd.join("/")
+            }
         }
+
+        is_only_one()
     }
 
     function refresh() {
@@ -229,14 +353,15 @@ Item {
         arr_ids_enable.splice(0, arr_ids_enable.length)
         test_umd_av.splice(0, test_umd_av.length)
         for (var i = 0; i < arr_result.length; i++) {
-            var v = arr_result[i].slice(-2)
-            test_ids.push(v[1])
-            umd_chart.createSeries(ChartView.SeriesTypeLine, v[1],
+            var v = arr_result[i].slice(-3)
+            test_ids.push(v[2])
+            umd_chart.createSeries(ChartView.SeriesTypeLine, v[2],
                                    umdAxisX, umdAxisY)
-            flow_chart.createSeries(ChartView.SeriesTypeLine, v[1], valueAxisX,
+            flow_chart.createSeries(ChartView.SeriesTypeLine, v[2], valueAxisX,
                                     valueAxisY)
-            test_umd_av.push(v[0])
+            test_umd_av.push(v[1])
             arr_ids_enable.push(true)
+            result_obj.push(v[0])
         }
 
         arr_ids = test_ids

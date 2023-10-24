@@ -9,6 +9,8 @@ ApplicationWindow {
     id: window
     width: 960
     height: 720
+    minimumHeight: 680
+    minimumWidth: 800
     visible: true
     title: qsTr("em-exhale")
     x: appSettings.sceen_x

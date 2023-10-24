@@ -40,6 +40,7 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES view/MyEdit.qml
         QML_FILES Snodataview.qml
         QML_FILES Rootview.qml
+        QML_FILES view/MySlide.qml
 )
 
 
