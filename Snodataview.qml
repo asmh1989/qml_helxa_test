@@ -413,4 +413,8 @@ Item {
     Component.onCompleted: {
         load_data()
     }
+
+    Component.onDestruction: {
+        console.log("sno data view onDestruction ...")
+    }
 }

@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-    qputenv("QT_SCALE_FACTOR", "1.2");
+//    qputenv("QT_SCALE_FACTOR", "1.25");
 
     QApplication app(argc, argv);
 

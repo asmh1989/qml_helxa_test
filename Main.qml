@@ -7,16 +7,25 @@ import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: window
-    width: 960
-    height: 720
-    minimumHeight: 680
-    minimumWidth: 800
+    width: dp(960)
+    height: dp(720)
+    minimumHeight: dp(680)
+    minimumWidth: dp(800)
     visible: true
     title: qsTr("em-exhale")
     x: appSettings.sceen_x
     y: appSettings.sceen_y
 
+    property real dpScale: 1.5
+    readonly property real dpi: Math.max(
+                                    Screen.pixelDensity * 25.4 / 160 * dpScale,
+                                    1)
+
     property string data_dir_name: ""
+
+    function dp(v) {
+        return v * dpi
+    }
 
     ToastManager {
         id: toast
@@ -28,7 +37,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-
+        console.log("dpi = " + dpi)
     }
 
     Rectangle {

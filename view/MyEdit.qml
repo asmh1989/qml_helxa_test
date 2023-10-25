@@ -6,15 +6,16 @@ Row {
     property alias value: ed.text
     property alias edWidth: ed.width
     Text {
-        text: name+": "
+        text: name + ": "
         anchors.verticalCenter: parent.verticalCenter
     }
 
     TextField {
         id: ed
         text: value
-        height: parent.height - 2
+        height: parent.height
         anchors.verticalCenter: parent.verticalCenter
         font.pixelSize: 14
+        padding: 6
     }
 }
