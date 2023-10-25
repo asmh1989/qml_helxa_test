@@ -89,7 +89,23 @@ const COMMAND_FENO50_2 = "Feno50Train2"
 const COMMAND_FENO50_MODE1 = "Feno50Mode1"
 const COMMAND_FENO50_MODE2 = "Feno50Mode2"
 
+const HELXA_STATUS_SAMPLE = 0
+const HELXA_STATUS_ANAY = 1
+const HELXA_STATUS_FINISH = 2
+
 var _sample_values = [FUNC_STATUS, FLOW_RT, FUNC_ACK, FUNC_NAME, AMBIENT_TEMP, TRACE_UMD1_TEMP, TRACE_UMD1, AMBIENT_HUMI]
+
+const HELXA_TIPS = {
+    "init": "开始吸气前, 请先主动排空肺里的气",
+    "ready": "请开始吸气(注意是吸仪器中的气!!)",
+    "start_inhale": "吸气中, 不要停,保持2-3秒, 吸满!",
+    "start_exhale": "请开始呼气, 流量尽可能保持在红线之间",
+    "ex_flow": "呼气流量过高, 请慢一点...",
+    "low_flow": "呼气流量过低, 加把油!",
+    "keep": "很好, 请保持住, 均匀呼气",
+    "done": "测试结束, 可以拿开仪器了,你真棒!",
+    "failed": "测试失败, 不要气馁, 再来一次!"
+}
 
 function get_sample_req(delay) {
     return {
@@ -139,10 +155,6 @@ function is_helxa_failed(value) {
 
     return false
 }
-
-const HELXA_STATUS_SAMPLE = 0
-const HELXA_STATUS_ANAY = 1
-const HELXA_STATUS_FINISH = 2
 
 function get_helxa_status(value) {
     if (value === STATUS_FLOW1 || value === STATUS_FLOW2 || value
@@ -246,18 +258,6 @@ function is_exhale(_status) {
     } else {
         return false
     }
-}
-
-const HELXA_TIPS = {
-    "init": "开始吸气前, 请先主动排空肺里的气",
-    "ready": "请开始吸气(注意是吸仪器中的气!!)",
-    "start_inhale": "吸气中, 不要停,保持2-3秒, 吸满!",
-    "start_exhale": "请开始呼气, 流量尽可能保持在红线之间",
-    "ex_flow": "呼气流量过高, 请慢一点...",
-    "low_flow": "呼气流量过低, 加把油!",
-    "keep": "很好, 请保持住, 均匀呼气",
-    "done": "测试结束, 可以拿开仪器了,你真棒!",
-    "failed": "测试失败, 不要气馁, 再来一次!"
 }
 
 function formatDate() {
