@@ -52,6 +52,11 @@ Row {
         }
     }
 
+    function setValues(v1, v2) {
+        console.log("setValues " + v1 + " ," + v2)
+        rs.setValues(v1, v2)
+    }
+
     Component.onCompleted: {
         left.text = rs.first.value
         right.text = rs.second.value

@@ -186,11 +186,12 @@ Item {
                 z: 2
 
                 onVisibleChanged: {
+
                     //                    console.log("visible changed...")
-                    rs1.first.value = appSettings.umd_state1
-                    rs2.second.value = appSettings.umd_state2
-                    rs2.first.value = appSettings.umd_state3
-                    rs2.second.value = appSettings.umd_state4
+                    //                    rs1.setValues(appSettings.umd_state1,
+                    //                                  appSettings.umd_state2)
+                    //                    rs1.setValues(appSettings.umd_state3,
+                    //                                  appSettings.umd_state4)
                 }
 
                 MySlide {
@@ -326,9 +327,9 @@ Item {
                 umds = arr_umd.length
 
                 dd[0] = Common.umd_avg(state1, state2, state3, state4, arr_umd)
-                //                console.log("pup_con = " + pup_con + " " + state1 + "," + state2
-                //                            + "," + state3 + "," + state4 + " length = " + umds
-                //                            + " id = " + test_id + " avg = " + dd[0])
+                console.log("pup_con = " + pup_con + " " + state1 + "," + state2
+                            + "," + state3 + "," + state4 + " length = " + umds
+                            + " id = " + test_id + " avg = " + dd[0])
                 pdd.text = "气袋浓度-均值差: " + pup_con + "-" + dd[0]
                 new_result = arr_result.filter(
                             (e, i) => arr_ids_enable[i])[0].map(e => e)
