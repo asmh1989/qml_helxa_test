@@ -16,6 +16,8 @@ ApplicationWindow {
     x: appSettings.sceen_x
     y: appSettings.sceen_y
 
+    property bool is_open: false
+
     property real dpScale: 1.5
     readonly property real dpi: Math.max(
                                     Screen.pixelDensity * 25.4 / 160 * dpScale,
@@ -135,5 +137,7 @@ ApplicationWindow {
 
         // 测试任务id
         property int test_id: 1
+
+        property bool use_serialport: true
     }
 }

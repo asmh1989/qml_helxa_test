@@ -1,7 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 
-import QtWebSockets
+//import QtWebSockets
+import EmSockets
 
 import "common.js" as Common
 
@@ -12,7 +13,6 @@ Item {
     readonly property string _sample_value: JSON.stringify(
                                                 Common.get_sample_req(0))
 
-    property bool connected: false
     property var sample_data
     property int read_times: 0
     property int update_count: 0
@@ -21,8 +21,9 @@ Item {
     property bool in_helxa: false
     property string _status: ""
 
-    WebSocket {
+    EmSocket {
         id: socket
+        type: appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket
         url: appSettings.url
         onTextMessageReceived: function (message) {
             var obj = JSON.parse(message)
@@ -43,6 +44,10 @@ Item {
                     if (typeof my_satatus !== "undefined") {
                         my_satatus.dataChanged(obj.ok)
                     }
+                } else if (obj.method === "start_exhale_test") {
+                    start_helxa_test("")
+                } else if (obj.method === "test") {
+                    socket.notifyTestOk()
                 }
             } else {
                 showToast("error msg =  " + message)
@@ -50,23 +55,28 @@ Item {
         }
 
         onStatusChanged: {
-            connected = false
             appSettings.url = socket.url
-            if (socket.status == WebSocket.Error) {
-                appendLog("Error: " + socket.errorString)
-            } else if (socket.status == WebSocket.Open) {
-                appendLog("Socket connected = " + appSettings.url)
-                connected = true
+            if (socket.status == EmSocket.Error) {
+                if (socket.errorString.length > 0) {
+                    appendLog("Error: " + socket.errorString)
+                }
+            } else if (socket.status == EmSocket.Open) {
+                appendLog("Socket connected = "
+                          + appSettings.use_serialport ? "串口打开" : appSettings.url)
+                is_open = true
                 if (!sample_data) {
                     refresh()
                 }
-            } else if (socket.status == WebSocket.Closed) {
-                connected = false
-                appendLog("Socket closed = " + appSettings.url)
-            } else if (socket.status == WebSocket.Connecting) {
-                appendLog("Socket Connecting = " + appSettings.url)
+            } else if (socket.status == EmSocket.Closed) {
+                is_open = false
+                appendLog("Socket closed = "
+                          + appSettings.use_serialport ? "串口关闭" : appSettings.url)
+            } else if (socket.status == EmSocket.Connecting) {
+                is_open = false
+                appendLog("Socket Connecting = "
+                          + appSettings.use_serialport ? "连接串口" : appSettings.url)
             }
-            if (!connected) {
+            if (!is_open) {
                 helxa_reset()
             }
         }
@@ -76,8 +86,7 @@ Item {
 
     Header {
         id: header
-        is_open: connected
-        url: appSettings.url
+        url: appSettings.use_serialport ? "正在使用串口" : appSettings.url
     }
 
     Status {
@@ -130,7 +139,7 @@ Item {
     }
 
     function send_json(msg) {
-        if (connected) {
+        if (is_open) {
             _send_(JSON.stringify(msg))
         } else {
             toast.show("websockets 已断开", 3000)
@@ -188,17 +197,18 @@ Item {
                     return
                 }
             }
-
-            var msg = Common.get_start_helxa_req(command)
-            appendLog("send: " + JSON.stringify(msg))
-            send_json(msg)
+            if (command.length !== 0) {
+                var msg = Common.get_start_helxa_req(command)
+                appendLog("send: " + JSON.stringify(msg))
+                send_json(msg)
+            }
             helxa_reset()
             timer.restart()
             chart_start()
             console.log("start_helxa_test ...")
             in_helxa = true
         } else {
-            showToast("已在呼吸测试中, 请稍后")
+            console.log("已在呼吸测试中, 请稍后")
         }
     }
 

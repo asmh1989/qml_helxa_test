@@ -6,7 +6,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.3 REQUIRED COMPONENTS Gui Charts Quick Core QuickControls2 WebSockets)
+find_package(Qt6 6.3 REQUIRED COMPONENTS Gui Charts Quick Core QuickControls2 WebSockets SerialPort)
+
+add_subdirectory(Qt-AES)
 
 if(QT_KNOWN_POLICY_QTP0001)
     qt_policy(SET QTP0001 OLD)
@@ -14,7 +16,7 @@ endif()
 
 qt_add_executable(appqt-websockerts
     images.qrc
-    main.cpp
+    src/main.cpp
 )
 
 qt6_add_qml_module(appqt-websockerts
@@ -33,7 +35,10 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES Toast.qml
         QML_FILES ToastManager.qml
         QML_FILES Sno.qml
-        SOURCES fileio.h fileio.cpp
+        SOURCES src/fileio.h src/fileio.cpp
+        SOURCES src/singletonmanager.h src/singletonmanager.cpp
+        SOURCES src/utils.h src/utils.cpp
+        SOURCES src/model.h
         QML_FILES Fenomode.qml
         QML_FILES Ball.qml
         QML_FILES view/MyLabel.qml
@@ -41,6 +46,7 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES Snodataview.qml
         QML_FILES Rootview.qml
         QML_FILES view/MySlide.qml
+        SOURCES src/qmlemsocket.h src/qmlemsocket.cpp
 )
 
 
@@ -70,6 +76,8 @@ target_link_libraries(appqt-websockerts
     Qt6::WebSockets
     Qt6::Charts
     Qt::Gui
+    Qt6::SerialPort
+    QtAES
 )
 
 include(GNUInstallDirs)
