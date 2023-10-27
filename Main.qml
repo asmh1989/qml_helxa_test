@@ -104,6 +104,33 @@ ApplicationWindow {
         toast.show(msg, 3000)
     }
 
+    function setTimeout(func, interval, ...params) {
+        return setTimeoutComponent.createObject(window, {
+                                                    "func": func,
+                                                    "interval": interval,
+                                                    "params": params
+                                                })
+    }
+
+    function clearTimeout(timerObj) {
+        timerObj.stop()
+        timerObj.destroy()
+    }
+
+    Component {
+        id: setTimeoutComponent
+        Timer {
+            property var func
+            property var params
+            running: true
+            repeat: false
+            onTriggered: {
+                func(...params)
+                destroy()
+            }
+        }
+    }
+
     Settings {
         id: appSettings
         fileName: "./config.txt"
@@ -125,19 +152,12 @@ ApplicationWindow {
 
         property int sceen_x: 0
         property int sceen_y: 0
-
-        // 室内温度
         property string indoor_temp: ""
-        // 气袋编号
         property string puppet_num: ""
-        // 气袋浓度
         property string puppet_con: ""
-        // 仪器码
         property string mac_code: ""
-
-        // 测试任务id
         property int test_id: 1
 
-        property bool use_serialport: true
+        property bool use_serialport: false
     }
 }

@@ -93,7 +93,7 @@ void QmlEmSocket::testCheck() {
     auto now = QDateTime::currentDateTime();
     qDebug() << now << m_serial.portName() << " testCheck "
              << qAbs(now.secsTo(m_testDate));
-    if (m_portName.isEmpty() && qAbs(now.secsTo(m_testDate)) > 2) {
+    if (m_portName.isEmpty() && qAbs(now.secsTo(m_testDate)) > 4) {
       qDebug() << "recv test response timeout!";
       close();
       findPort();
@@ -165,6 +165,7 @@ void QmlEmSocket::receive() {
   if (receivedData.isEmpty()) {
     return;
   }
+
   buffer.append(receivedData);
 
   // 寻找帧头'$'

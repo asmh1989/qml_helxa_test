@@ -21,6 +21,8 @@ Item {
     property bool in_helxa: false
     property string _status: ""
 
+    property var send_time
+
     function change_type() {
         socket.type = appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket
     }
@@ -30,6 +32,7 @@ Item {
         url: appSettings.url
         type: (appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket)
         onTextMessageReceived: function (message) {
+            //            console.log("耗时: " + (new Date().getTime() - send_time))
             var obj = JSON.parse(message)
             if (obj.ok) {
                 if (obj.method === "get_sample") {
@@ -157,6 +160,7 @@ Item {
     }
 
     function _send_(msg) {
+        send_time = new Date().getTime()
         socket.sendTextMessage(msg)
     }
 
@@ -212,9 +216,12 @@ Item {
                 send_json(msg)
             }
             helxa_reset()
-            timer.restart()
-            chart_start()
-            console.log("start_helxa_test ...")
+            setTimeout(() => {
+                           timer.restart()
+                           chart_start()
+                           console.log("start_helxa_test ...")
+                       }, 200)
+
             in_helxa = true
         } else {
             console.log("已在呼吸测试中, 请稍后")
