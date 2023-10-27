@@ -112,17 +112,20 @@ Item {
         }
 
         Row {
+            clip: true
+            Layout.alignment: Qt.AlignHCenter
             visible: arr_ids.length > 0
             width: parent.width
-            Layout.alignment: Qt.AlignHCenter
-            height: 24
+            height: 28 // 固定高度，用于显示一行
+            //                width: parent.width
+            //            height: parent.width
             spacing: 6
 
             Repeater {
                 model: arr_ids.length // 这里的10可以替换为你的数据数组的长度
                 CheckBox {
                     required property int index
-                    checked: true
+                    checked: arr_ids_enable[index]
                     text: arr_ids[index]
                     onClicked: {
                         var u = umd_chart.series(arr_ids[index] + "")
@@ -134,9 +137,10 @@ Item {
                         if (f) {
                             f.visible = !f.visible
                         }
-                        arr_ids_enable[index] = !arr_ids_enable[index]
 
+                        arr_ids_enable[index] = !arr_ids_enable[index]
                         refresh_label()
+                        refresh_xy()
                     }
                 }
             }
@@ -306,6 +310,47 @@ Item {
         }
     }
 
+    function refresh_xy() {
+        var dd = arr_result.filter((e, i) => arr_ids_enable[i]).map(
+                    e => e[e.length - 1])
+
+        //        console.log("dd = " + JSON.stringify(dd))
+        var min_y_f = 1000000
+        var max_y_f = 0
+        var min_y_u = 1000000
+        var max_y_u = 0
+
+        arr_data.filter(e => dd.includes(e[0] + "")).forEach(e => {
+                                                                 var f = parseFloat(
+                                                                     e[1])
+                                                                 var u = parseInt(
+                                                                     e[2])
+                                                                 if (min_y_f > f) {
+                                                                     min_y_f = f
+                                                                 }
+
+                                                                 if (max_y_f < f) {
+                                                                     max_y_f = f
+                                                                 }
+
+                                                                 if (min_y_u > u) {
+                                                                     min_y_u = u
+                                                                 }
+
+                                                                 if (max_y_u < u) {
+                                                                     max_y_u = u
+                                                                 }
+                                                             })
+        valueAxisY.min = Math.round(min_y_f - Math.abs(min_y_f) / 10 - 1)
+        valueAxisY.max = Math.ceil(max_y_f + Math.abs(max_y_f) / 10 + 1)
+        umdAxisY.min = Math.round(min_y_u - Math.abs(min_y_u) / 10 - 1)
+        umdAxisY.max = Math.ceil(max_y_u + Math.abs(max_y_u) / 10 + 1)
+
+        //        console.log("refresh_xy : valueAxisY.min = " + valueAxisY.min
+        //                    + " valueAxisY.max=" + valueAxisY.max + " umdAxisY.min="
+        //                    + umdAxisY.min + " umdAxisY.max = " + umdAxisY.max)
+    }
+
     function refresh_label() {
         var dd = test_umd_av.map((e, i) => result_obj[i] + "-" + e).filter(
                     (e, i) => arr_ids_enable[i])
@@ -313,7 +358,6 @@ Item {
         if (dd.length === 0) {
             pdd.text = ""
         } else {
-
             if (dd.length === 1) {
                 var state1 = rs1.l_value
                 var state2 = rs1.r_value
@@ -327,9 +371,9 @@ Item {
                 umds = arr_umd.length
 
                 dd[0] = Common.umd_avg(state1, state2, state3, state4, arr_umd)
-                console.log("pup_con = " + pup_con + " " + state1 + "," + state2
-                            + "," + state3 + "," + state4 + " length = " + umds
-                            + " id = " + test_id + " avg = " + dd[0])
+                //                console.log("pup_con = " + pup_con + " " + state1 + "," + state2
+                //                            + "," + state3 + "," + state4 + " length = " + umds
+                //                            + " id = " + test_id + " avg = " + dd[0])
                 pdd.text = "气袋浓度-均值差: " + pup_con + "-" + dd[0]
                 new_result = arr_result.filter(
                             (e, i) => arr_ids_enable[i])[0].map(e => e)
@@ -361,13 +405,14 @@ Item {
             flow_chart.createSeries(ChartView.SeriesTypeLine, v[2], valueAxisX,
                                     valueAxisY)
             test_umd_av.push(v[1])
-            arr_ids_enable.push(true)
+            arr_ids_enable.push(false)
             result_obj.push(v[0])
         }
 
+        if (arr_ids_enable.length > 0) {
+            arr_ids_enable[0] = true
+        }
         arr_ids = test_ids
-
-        refresh_label()
 
         var pre_id = 0
         var x = 0
@@ -400,6 +445,26 @@ Item {
             }
             x += 1
         }
+
+        refresh_label()
+        refresh_xy()
+        refresh_visible()
+    }
+
+    /// 刷新chart 可见
+    function refresh_visible() {
+        arr_result.forEach((e, i) => {
+                               var id = e[e.length - 1]
+                               var u = umd_chart.series(id + "")
+                               if (u) {
+                                   u.visible = arr_ids_enable[i]
+                               }
+
+                               var f = flow_chart.series(id + "")
+                               if (f) {
+                                   f.visible = arr_ids_enable[i]
+                               }
+                           })
     }
 
     function load_data() {
