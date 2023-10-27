@@ -58,19 +58,14 @@ void QmlEmSocket::setType(QmlEmSocket::ChannelType type) {
   if (m_type == type) {
     return;
   }
+  qDebug() << "new type = " << type;
+
   if (m_status == Open) {
-    if (type == ChannelType::SerialPort) {
-      if (m_webSocket) {
-        m_webSocket->close();
-      }
-    } else {
-      m_serial.close();
-    }
+    close();
   }
 
   m_type = type;
   Q_EMIT typeChanged();
-  open();
 }
 
 QmlEmSocket::Status QmlEmSocket::status() const { return m_status; }
@@ -96,8 +91,9 @@ void QmlEmSocket::componentComplete() {
 void QmlEmSocket::testCheck() {
   if (m_serial.isOpen()) {
     auto now = QDateTime::currentDateTime();
-    qDebug() << now << " testCheck";
-    if (m_portName.isEmpty() && now.secsTo(m_testDate) > 2) {
+    qDebug() << now << m_serial.portName() << " testCheck "
+             << qAbs(now.secsTo(m_testDate));
+    if (m_portName.isEmpty() && qAbs(now.secsTo(m_testDate)) > 2) {
       qDebug() << "recv test response timeout!";
       close();
       findPort();
@@ -125,11 +121,10 @@ void QmlEmSocket::findPort() {
     if (m_testPort.contains(port)) {
       continue;
     }
-    auto err = openSerialPort(port);
     setStatus(Connecting);
+    auto err = openSerialPort(port);
     m_testPort.push_back(m_portName);
     if (err.isEmpty()) {
-      setStatus(Open);
       auto msg = "{\"method\":\"test\"}";
       qDebug() << "send test msg";
       m_testDate = QDateTime::currentDateTime();
@@ -156,7 +151,7 @@ void QmlEmSocket::setPort() {
 }
 
 void QmlEmSocket::recvFrame(const SerialData &data) {
-  emit textMessageReceived(data.data);
+  Q_EMIT textMessageReceived(data.data);
 }
 
 void QmlEmSocket::notifyTestOk() {
@@ -227,6 +222,7 @@ QString QmlEmSocket::openSerialPort(const QString &port_name) {
         .arg(port_name)
         .arg(m_serial.error());
   } else {
+    setStatus(Open);
     qDebug() << "openSerial success!";
   }
 
@@ -323,10 +319,23 @@ void QmlEmSocket::open() {
   if (m_type == ChannelType::WebSocket) {
     if (m_componentCompleted && m_isActive && m_url.isValid() &&
         Q_LIKELY(m_webSocket)) {
+      qDebug() << "start open websockets";
       m_webSocket->open(m_url);
+    } else {
+      if (!Q_LIKELY(m_webSocket)) {
+        setSocket(new QWebSocket);
+        open();
+      }
+      //      qDebug() << "open failed!" << m_url.isValid() <<
+      //      Q_LIKELY(m_webSocket);
     }
   } else {
-    findPort();
+    if (m_portName.isEmpty()) {
+      findPort();
+    } else {
+      setStatus(Connecting);
+      openSerialPort(m_portName);
+    }
   }
 }
 

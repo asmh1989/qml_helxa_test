@@ -21,10 +21,14 @@ Item {
     property bool in_helxa: false
     property string _status: ""
 
+    function change_type() {
+        socket.type = appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket
+    }
+
     EmSocket {
         id: socket
-        type: appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket
         url: appSettings.url
+        type: (appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket)
         onTextMessageReceived: function (message) {
             var obj = JSON.parse(message)
             if (obj.ok) {
@@ -60,21 +64,20 @@ Item {
                 if (socket.errorString.length > 0) {
                     appendLog("Error: " + socket.errorString)
                 }
+                is_open = false
             } else if (socket.status == EmSocket.Open) {
                 appendLog("Socket connected = "
-                          + appSettings.use_serialport ? "串口打开" : appSettings.url)
+                          + (appSettings.use_serialport ? "串口打开" : appSettings.url))
                 is_open = true
                 if (!sample_data) {
                     refresh()
                 }
             } else if (socket.status == EmSocket.Closed) {
+                appendLog("Socket closed")
                 is_open = false
-                appendLog("Socket closed = "
-                          + appSettings.use_serialport ? "串口关闭" : appSettings.url)
             } else if (socket.status == EmSocket.Connecting) {
-                is_open = false
                 appendLog("Socket Connecting = "
-                          + appSettings.use_serialport ? "连接串口" : appSettings.url)
+                          + (appSettings.use_serialport ? "连接串口" : appSettings.url))
             }
             if (!is_open) {
                 helxa_reset()
@@ -86,7 +89,7 @@ Item {
 
     Header {
         id: header
-        url: appSettings.use_serialport ? "正在使用串口" : appSettings.url
+        url: appSettings.url
     }
 
     Status {
@@ -135,7 +138,13 @@ Item {
 
     function start_websocket(open) {
         socket.url = header.url
-        socket.active = open
+        //        console.log("start_websocket active=" + socket.active + " open =" + open
+        //                    + " is_open = " + is_open)
+        if (open) {
+            socket.open()
+        } else {
+            socket.close()
+        }
     }
 
     function send_json(msg) {
@@ -232,7 +241,6 @@ Item {
 
     function appendLog(msg) {
         if (msg.length === 0) {
-            // clear
             area.text = ""
         } else {
             var d = new Date().toISOString()

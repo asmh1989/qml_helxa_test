@@ -24,13 +24,26 @@ Rectangle {
             height: 28
             anchors.horizontalCenter: parent.horizontalCenter
 
+            ComboBox {
+                height: parent.height
+                width: 100
+                currentIndex: (appSettings.use_serialport ? 0 : 1)
+                model: ["串口", "Socket"]
+                onCurrentTextChanged: {
+                    console.log("onCurrentTextChanged " + currentIndex + " "
+                                + appSettings.use_serialport)
+                    appSettings.use_serialport = (currentIndex == 0)
+                    root.change_type()
+                }
+            }
+
             TextField {
                 id: tf
                 height: parent.height
                 width: 188
                 font.pixelSize: 14
                 placeholderText: qsTr("URL")
-                enabled: !appSettings.use_serialport
+                visible: !appSettings.use_serialport
             }
 
             Button {
@@ -75,7 +88,7 @@ Rectangle {
             Button {
                 height: parent.height
                 text: "开始测试"
-                enabled: !root.in_helxa
+                enabled: (is_open && !root.in_helxa)
                 onClicked: {
                     save_cache()
                     root.start_helxa_test(cb.currentText)
@@ -85,6 +98,7 @@ Rectangle {
             Button {
                 height: parent.height
                 text: "手动停止"
+                enabled: is_open
                 onClicked: {
                     save_cache()
                     root.stop_helxa_test()
