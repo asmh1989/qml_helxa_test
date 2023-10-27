@@ -7,10 +7,10 @@ import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: window
-    width: dp(960)
-    height: dp(720)
-    minimumHeight: dp(680)
-    minimumWidth: dp(800)
+    width: dp(860)
+    height: dp(680)
+    minimumWidth: dp(760)
+    //    minimumHeight: dp(600)
     visible: true
     title: qsTr("em-exhale")
     x: appSettings.sceen_x

@@ -178,7 +178,7 @@ Item {
 
     /// 呼吸检测重置
     function helxa_reset() {
-        if (read_times > 100) {
+        if (read_times > 50) {
             appendLog("helxa_stop: read_times = " + read_times + " update_count = " + update_count)
         }
 
