@@ -95,6 +95,12 @@ const HELXA_STATUS_FINISH = 2
 
 var _sample_values = [FUNC_STATUS, FLOW_RT, FUNC_ACK, FUNC_NAME, AMBIENT_TEMP, TRACE_UMD1_TEMP, TRACE_UMD1, AMBIENT_HUMI]
 
+const METHOD_START_HELXA = "start_exhale_test"
+const METHOD_HELXA_STARTING = "exhale_starting"
+const METHOD_HELXA_STARTED = "exhale_started"
+const METHOD_DEVICE_HELXA_FAILED = "device_exhale_failed"
+const METHOD_GET_SAMPLE = "get_sample"
+
 const HELXA_TIPS = {
     "init": "开始吸气前, 请先主动排空肺里的气",
     "ready": "请开始吸气(注意是吸仪器中的气!!)",
@@ -109,7 +115,7 @@ const HELXA_TIPS = {
 
 function get_sample_req(delay) {
     return {
-        "method": "get_sample",
+        "method": METHOD_GET_SAMPLE,
         "args": _sample_values,
         "delay": delay
     }
@@ -117,7 +123,7 @@ function get_sample_req(delay) {
 
 function get_start_helxa_req(command) {
     return {
-        "method": "start_exhale_test",
+        "method": METHOD_START_HELXA,
         "args": [command]
     }
 }

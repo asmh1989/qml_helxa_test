@@ -34,8 +34,28 @@ Item {
         onTextMessageReceived: function (message) {
             //            console.log("耗时: " + (new Date().getTime() - send_time))
             var obj = JSON.parse(message)
+            if (obj.method === "test") {
+                socket.notifyTestOk()
+                return
+            } else if (obj.method === Common.METHOD_HELXA_STARTED) {
+                if (in_helxa) {
+                    appendLog("recv server command to start")
+                    //                    setTimeout(() => {
+                    timer.restart()
+                    chart_start()
+                    //                               }, 50)
+                }
+                return
+            } else if (obj.method === Common.METHOD_HELXA_STARTING) {
+                appendLog("设备正在启动中")
+                return
+            } else if (obj.method === Common.METHOD_DEVICE_HELXA_FAILED) {
+                appendLog("设备启动异常 : " + obj.method)
+                return
+            }
+
             if (obj.ok) {
-                if (obj.method === "get_sample") {
+                if (obj.method === Common.METHOD_GET_SAMPLE) {
                     if (sample_data
                             && sample_data["update_time"] !== obj.ok["update_time"]) {
                         update_count += 1
@@ -51,10 +71,11 @@ Item {
                     if (typeof my_satatus !== "undefined") {
                         my_satatus.dataChanged(obj.ok)
                     }
-                } else if (obj.method === "start_exhale_test") {
-                    start_helxa_test("")
-                } else if (obj.method === "test") {
-                    socket.notifyTestOk()
+                } else if (obj.method === Common.METHOD_START_HELXA
+                           && socket.type === EmSocket.WebSocket) {
+                    if (!in_helxa) {
+                        start_helxa_test("")
+                    }
                 }
             } else {
                 showToast("error msg =  " + message)
@@ -216,13 +237,8 @@ Item {
                 send_json(msg)
             }
             helxa_reset()
-            setTimeout(() => {
-                           timer.restart()
-                           chart_start()
-                           console.log("start_helxa_test ...")
-                       }, 200)
-
             in_helxa = true
+            console.log("start_helxa_test ...")
         } else {
             console.log("已在呼吸测试中, 请稍后")
         }
