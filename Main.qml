@@ -29,6 +29,18 @@ ApplicationWindow {
         return v * dpi
     }
 
+    function fix_umd(trace_umd1_temp, umd1) {
+        var x = trace_umd1_temp - appSettings.umd_standard_temp
+        var fix_xs = appSettings.standard_arg1 * x * x * x + appSettings.standard_arg2 * x
+                * x + appSettings.standard_arg3 * x + appSettings.standard_arg4
+
+        return (fix_xs * umd1).toFixed(2)
+    }
+
+    function fix_umd2(umd1) {
+        return (umd1 / appSettings.umd_standard).toFixed(2)
+    }
+
     ToastManager {
         id: toast
     }
@@ -39,7 +51,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        console.log("dpi = " + dpi)
+
     }
 
     Rectangle {
@@ -159,5 +171,12 @@ ApplicationWindow {
         property int test_id: 1
 
         property bool use_serialport: false
+
+        property real umd_standard: 3.8612
+        property real umd_standard_temp: 26.7
+        property real standard_arg1: 0.00004
+        property real standard_arg2: 0.0009
+        property real standard_arg3: -0.0126
+        property real standard_arg4: 1
     }
 }

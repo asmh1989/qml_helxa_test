@@ -50,7 +50,8 @@ Item {
                 appendLog("设备正在启动中")
                 return
             } else if (obj.method === Common.METHOD_DEVICE_HELXA_FAILED) {
-                appendLog("设备启动异常 : " + obj.method)
+                appendLog("设备启动异常, 请重试")
+                in_helxa = false
                 return
             }
 

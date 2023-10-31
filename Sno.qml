@@ -88,7 +88,10 @@ Rectangle {
                             0)
                 var av2 = sum / lastElements.length
                 var r = Math.abs(av1 - av2).toFixed(2)
-                msg = "测试成功: 气袋浓度(" + appSettings.puppet_con + ") umd1均值差 = " + r + " (ppb)"
+                var fix_r = fix_umd(
+                            sample_data[Common.TRACE_UMD1_TEMP] / 100.0, r)
+                msg = "测试成功: 气袋浓度(" + appSettings.puppet_con + ") umd1均值差 = "
+                        + fix_r + "/" + fix_umd2(fix_r) + " (ppb)"
                 save_to_file(r)
             } else {
                 success = false

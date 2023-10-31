@@ -365,6 +365,8 @@ Item {
                 var state4 = rs2.r_value
                 var test_id = arr_ids.filter((e, i) => arr_ids_enable[i])[0]
                 var pup_con = result_obj.filter((e, i) => arr_ids_enable[i])[0]
+                var umd_tmp = parseFloat(arr_result.filter(
+                                             (e, i) => arr_ids_enable[i])[0][5])
 
                 var arr_umd = arr_data.filter(e => e[0] === test_id).map(
                             e => parseInt(e[2]))
@@ -374,7 +376,9 @@ Item {
                 //                console.log("pup_con = " + pup_con + " " + state1 + "," + state2
                 //                            + "," + state3 + "," + state4 + " length = " + umds
                 //                            + " id = " + test_id + " avg = " + dd[0])
-                pdd.text = "气袋浓度-均值差: " + pup_con + "-" + dd[0]
+                var fix = fix_umd(umd_tmp, dd[0])
+                var fix2 = fix_umd2(fix)
+                pdd.text = "气袋浓度-均值差: " + pup_con + "-" + fix + "|" + fix2
                 new_result = arr_result.filter(
                             (e, i) => arr_ids_enable[i])[0].map(e => e)
                 new_result[new_result.length - 2] = dd[0]
