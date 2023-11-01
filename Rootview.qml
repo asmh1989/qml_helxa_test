@@ -45,7 +45,7 @@ Item {
         socket.type = appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket
     }
 
-    function save_to_file(diff) {
+    function save_to_file(diff, f1, f2) {
         var obj = sample_data
         var helxa_type = arr_helxa[appSettings.helxa_type]
         var trace_umd1_temp = obj[Common.TRACE_UMD1_TEMP] / 100.0
@@ -91,7 +91,7 @@ Item {
                             sample_data[Common.TRACE_UMD1_TEMP] / 100.0, r)
                 msg = "测试成功: 气袋浓度(" + appSettings.puppet_con + ") umd1均值差 = "
                         + fix_r + "/" + fix_umd2(fix_r) + " (ppb)"
-                save_to_file(r)
+                save_to_file(r, fix_r, fix_umd2(fix_r))
             } else {
                 success = false
                 msg = "帧数太少!"

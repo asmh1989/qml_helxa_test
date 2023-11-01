@@ -27,7 +27,7 @@ ApplicationWindow {
 
     property string _time_name: ""
     property var arr_data_header: ["测试ID", "实时流量", "检测器实时"]
-    property var result_header: ["仪器编号", "测试日期", "室内/箱内温度/℃", "环境温度/℃", "环境湿度RH/%", "检测器温度/℃", "检测类型", "气袋编号", "气袋浓度/ppb", "测量均值差", "测试ID"]
+    property var result_header: ["仪器编号", "测试日期", "室内/箱内温度/℃", "环境温度/℃", "环境湿度RH/%", "检测器温度/℃", "检测类型", "修正测量均值差", "测量值", "气袋编号", "气袋浓度/ppb", "测量均值差", "测试ID"]
     property var arr_flow_rt: []
     property var arr_umd1: []
 
@@ -45,8 +45,6 @@ ApplicationWindow {
     function get_flow_rt_path() {
         return get_result_prefix() + "/data.csv"
     }
-
-
 
     Component.onCompleted: {
         var now = new Date()

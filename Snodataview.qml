@@ -28,7 +28,7 @@ Item {
     property var result_obj: []
     property int umds: 710
 
-    property var result_header: ["仪器编号", "测试日期", "室内/箱内温度/℃", "环境温度/℃", "环境湿度RH/%", "检测器温度/℃", "检测类型", "气袋编号", "气袋浓度/ppb", "测量均值差", "测试ID", "state1", "state2", "state3", "state4"]
+    property var result_header: ["仪器编号", "测试日期", "室内/箱内温度/℃", "环境温度/℃", "环境湿度RH/%", "检测器温度/℃", "检测类型", "修正测量均值差", "测量值", "气袋编号", "气袋浓度/ppb", "测量均值差", "测试ID", "state1", "state2", "state3", "state4"]
 
     // 新的数据
     property var new_result: []
