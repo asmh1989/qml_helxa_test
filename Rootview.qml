@@ -52,7 +52,7 @@ Item {
         var ambient_temp = obj[Common.AMBIENT_TEMP] / 100.0
         var ambient_humi = obj[Common.AMBIENT_HUMI]
         var result_data = [appSettings.mac_code, Common.formatDate(
-                               ), appSettings.indoor_temp, ambient_temp, ambient_humi, trace_umd1_temp, helxa_type, appSettings.puppet_num, appSettings.puppet_con, diff, appSettings.test_id]
+                               ), appSettings.indoor_temp, ambient_temp, ambient_humi, trace_umd1_temp, helxa_type, f1, f2, appSettings.puppet_num, appSettings.puppet_con, diff, appSettings.test_id]
         var res = myFile.saveToCsv(get_result_path(), result_header,
                                    [result_data])
         appendLog(res)
