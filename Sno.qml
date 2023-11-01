@@ -4,109 +4,27 @@ import QtQuick.Controls
 import QtCharts
 
 import "common.js" as Common
-import FileIO
 
 import "./view"
 
 Rectangle {
-    property var arr_umd1: []
     property int umd1_x: 0
     property int umd1_min_y: 0
 
     /// 用于画chart
     readonly property int _interval: 100
-    property var arr_flow_rt: []
     property int _start_time: 0
     property int flow_x: 0
     property int flow_min_y: 0
 
-    property string _time_name: ""
-    property var arr_data_header: ["测试ID", "实时流量", "检测器实时"]
-    property var result_header: ["仪器编号", "测试日期", "室内/箱内温度/℃", "环境温度/℃", "环境湿度RH/%", "检测器温度/℃", "气袋编号", "气袋浓度/ppb", "测量均值差", "测试ID"]
-
-    function save_to_file(diff) {
-        var obj = root.sample_data
-        var trace_umd1_temp = obj[Common.TRACE_UMD1_TEMP] / 100.0
-        var ambient_temp = obj[Common.AMBIENT_TEMP] / 100.0
-        var ambient_humi = obj[Common.AMBIENT_HUMI]
-        var result_data = [appSettings.mac_code, Common.formatDate(
-                               ), appSettings.indoor_temp, ambient_temp, ambient_humi, trace_umd1_temp, appSettings.puppet_num, appSettings.puppet_con, diff, appSettings.test_id]
-        var res = myFile.saveToCsv(get_result_path(), result_header,
-                                   [result_data])
-        root.appendLog(res)
-
-        var data_ = arr_flow_rt.map(
-                    (element, index) => [appSettings.test_id, element, arr_umd1[index]])
-
-        var res2 = myFile.saveToCsv(get_flow_rt_path(), arr_data_header, data_)
-        root.appendLog(res2)
-        appSettings.test_id += 1
-    }
-
     function finish() {
         if (chart_timer.running) {
-            showResult()
+            result.text = getResultMsg("Sno")
             console.log("chart  stop!!")
             chart_timer.stop()
             reset_data()
             _start_time = 0
         }
-    }
-
-    function get_result_prefix() {
-        return "record_sno/" + appSettings.mac_code + "-" + _time_name
-    }
-
-    function get_result_path() {
-        return get_result_prefix() + "/result.csv"
-    }
-
-    function get_flow_rt_path() {
-        return get_result_prefix() + "/data.csv"
-    }
-
-    function showResult() {
-        var success = _status === Common.STATUS_END_FINISH
-        var msg = ""
-
-        //        save_to_file(0)
-        if (success) {
-            // 测试完成
-            var len = arr_umd1.length
-            if (len > 501) {
-                var lastElements = arr_umd1.slice(appSettings.umd_state1,
-                                                  appSettings.umd_state2)
-                var sum = lastElements.reduce(
-                            (accumulator, currentValue) => accumulator + currentValue,
-                            0)
-                var av1 = sum / lastElements.length
-
-                lastElements = arr_umd1.slice(appSettings.umd_state3,
-                                              appSettings.umd_state4)
-                sum = lastElements.reduce(
-                            (accumulator, currentValue) => accumulator + currentValue,
-                            0)
-                var av2 = sum / lastElements.length
-                var r = Math.abs(av1 - av2).toFixed(2)
-                var fix_r = fix_umd(
-                            sample_data[Common.TRACE_UMD1_TEMP] / 100.0, r)
-                msg = "测试成功: 气袋浓度(" + appSettings.puppet_con + ") umd1均值差 = "
-                        + fix_r + "/" + fix_umd2(fix_r) + " (ppb)"
-                save_to_file(r)
-            } else {
-                success = false
-                msg = "帧数太少!"
-            }
-        } else {
-            msg = Common.get_status_info(_status)
-        }
-
-        if (!success) {
-            msg = "测试失败: " + msg + "! 请重试"
-        }
-
-        root.showToastAndLog(msg)
-        result.text = msg
     }
 
     function reset_data() {
@@ -121,7 +39,7 @@ Rectangle {
         repeat: true
         interval: _interval
         onTriggered: () => {
-                         var obj = root.sample_data
+                         var obj = sample_data
                          var func_ack = obj[Common.FUNC_ACK]
 
                          // 未准备好
@@ -267,17 +185,6 @@ Rectangle {
                     appSettings.mac_code = value
                 }
             }
-
-            Button {
-                text: "数据分析"
-                height: parent.height
-                enabled: !root.in_helxa
-
-                onClicked: {
-                    data_dir_name = get_result_prefix()
-                    pushSnoView()
-                }
-            }
         }
 
         ChartView {
@@ -349,22 +256,5 @@ Rectangle {
             id: result
             anchors.centerIn: parent
         }
-    }
-
-    FileIO {
-        id: myFile
-        source: "test_file.txt"
-        onError: console.log(msg)
-    }
-
-    Component.onCompleted: {
-        var now = new Date()
-        var year = now.getFullYear()
-        var month = String(now.getMonth() + 1).padStart(2, '0')
-        var day = String(now.getDate()).padStart(2, '0')
-        var hours = String(now.getHours()).padStart(2, '0')
-        var minutes = String(now.getMinutes()).padStart(2, '0')
-        var seconds = String(now.getSeconds()).padStart(2, '0')
-        _time_name = year + month + day + '-' + hours + minutes + seconds
     }
 }

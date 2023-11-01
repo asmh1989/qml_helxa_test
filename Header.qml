@@ -69,20 +69,7 @@ Rectangle {
                 onCurrentTextChanged: {
                     appSettings.helxa_type = cb.currentIndex
                 }
-
-                //            currentIndex: 7
-                model: [//                "NONE",
-                    //                "FENO50_TRAIN1",
-                    //                "FENO50_TRAIN2",
-                    "FENO50_MODE1", //                "FENO50_MODE2",
-                    //                "FENO200_MODE1",
-                    //                "FENO200_MODE2",
-                    "SNO" //                "NNO_MODE1",
-                    //                "NNO_MODE2",
-                    //                "ECO",
-                    //                "SCO",
-                    //                "CLEAN",
-                ]
+                model: root.arr_helxa
             }
 
             Button {
@@ -102,6 +89,16 @@ Rectangle {
                 onClicked: {
                     save_cache()
                     root.stop_helxa_test()
+                }
+            }
+            Button {
+                text: "数据分析"
+                height: parent.height
+                enabled: !root.in_helxa
+
+                onClicked: {
+                    data_dir_name = get_result_prefix()
+                    pushSnoView()
                 }
             }
         }

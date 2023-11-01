@@ -8,7 +8,7 @@ Rectangle {
     property var flow_datas: []
     /// 用于画chart
     readonly property int _interval: 100
-    property var arr_flow_rt: []
+    //    property var arr_flow_rt: []
     property int _start_time: 0
     property double prev_time: 0.0
     property int flow_x: 0
@@ -18,36 +18,38 @@ Rectangle {
     property bool show_result_chart: false
 
     function finish() {
-        if(chart_timer.running){
-            console.log("chart  stop!!");
-            chart_timer.stop();
+        if (chart_timer.running) {
+            txt.text = getResultMsg("FENO50_MODE1")
+            console.log("chart  stop!!")
+            chart_timer.stop()
             reset_data()
             _start_time = 0
             show_result_chart = true
-            bar.visible = false;
+            bar.visible = false
         }
     }
 
     function start() {
-        if(appSettings.use_anim_ball){
+        if (appSettings.use_anim_ball) {
             ball.reset()
         }
+        set_success_text(Common.HELXA_TIPS.init)
 
         show_result_chart = false
         av_flow_rt = 0
-        flow_datas.splice(0, flow_datas.length);
-        chart.clear();
-        chart2.clear();
-        chart_timer.start();
-        status_timer.start();
-        bar.visible = true;
-        appendLog("灵敏度 = "+ appSettings.aver_num + " 45-55 = "+ appSettings.use_real_red_line);
+        flow_datas.splice(0, flow_datas.length)
+        chart.clear()
+        chart2.clear()
+        chart_timer.start()
+        status_timer.start()
+        bar.visible = true
+        appendLog("灵敏度 = " + appSettings.aver_num + " 45-55 = " + appSettings.use_real_red_line)
     }
 
     function reset_data() {
-        set_success_text(Common.HELXA_TIPS.init)
         flow_x = 0
-        arr_flow_rt.splice(0, arr_flow_rt.length);
+        arr_flow_rt.splice(0, arr_flow_rt.length)
+        arr_umd1.splice(0, arr_umd1.length)
     }
 
     function set_success_text(text) {
@@ -60,56 +62,55 @@ Rectangle {
         txt.color = 'red'
     }
 
-
     Timer {
         id: status_timer
         repeat: true
         interval: 200
-        onTriggered: ()=>{
-                         if(!root.in_helxa) {
-                             if(Common.is_helxa_failed(_status)) {
+        onTriggered: () => {
+                         if (!root.in_helxa) {
+                             if (Common.is_helxa_failed(_status)) {
                                  set_failed_text(Common.HELXA_TIPS.failed)
                              } else {
                                  set_success_text(Common.HELXA_TIPS.init)
                              }
 
                              status_timer.stop()
-                             return;
+                             return
                          }
 
-                         var now = new Date().getTime();
-                         var diff = now - prev_time;
-                         if(_status === Common.STATUS_FLOW1){
+                         var now = new Date().getTime()
+                         var diff = now - prev_time
+                         if (_status === Common.STATUS_FLOW1) {
                              console.log("准备开始吸气")
                              set_success_text(Common.HELXA_TIPS.ready)
-                             prev_time = 0;
-                             bar.indeterminate = true;
-                         } else if(_status === Common.STATUS_FLOW2) {
+                             prev_time = 0
+                             bar.indeterminate = true
+                         } else if (_status === Common.STATUS_FLOW2) {
                              set_success_text(Common.HELXA_TIPS.start_inhale)
-                             bar.indeterminate = false;
-                             if(diff > 1000000){
+                             bar.indeterminate = false
+                             if (diff > 1000000) {
                                  root.appendLog("已经开始开始吸气")
-                                 prev_time = now;
-                             } else if(diff < 2500) {
-                                 bar.value = diff / 2500;
-                                 if(appSettings.use_anim_ball) {
-                                    ball.append_scale(300/2500);
+                                 prev_time = now
+                             } else if (diff < 2500) {
+                                 bar.value = diff / 2500
+                                 if (appSettings.use_anim_ball) {
+                                     ball.append_scale(300 / 2500)
                                  }
                              } else {
                                  root.appendLog("请开始呼气")
                                  set_failed_text(Common.HELXA_TIPS.start_exhale)
                                  bar.value = 0
                              }
-                         } else if(Common.is_exhale(_status)) {
-                             if(!bar.indeterminate ){
-                                 bar.value += 1 / 30;
+                         } else if (Common.is_exhale(_status)) {
+                             if (!bar.indeterminate) {
+                                 bar.value += 1 / 30
                              }
 
                              if (diff > 3000) {
                                  prev_time = now
-                             } else if(diff > 500) {
-                                  bar.indeterminate = false;
-                                 if(av_flow_rt > 55) {
+                             } else if (diff > 500) {
+                                 bar.indeterminate = false
+                                 if (av_flow_rt > 55) {
                                      set_failed_text(Common.HELXA_TIPS.ex_flow)
                                  } else if (av_flow_rt < 45) {
                                      set_failed_text(Common.HELXA_TIPS.low_flow)
@@ -118,8 +119,8 @@ Rectangle {
                                  }
                                  prev_time = now
                              }
-                         } else if(Common.is_helxa_analy(_status)){
-                             bar.indeterminate = true;
+                         } else if (Common.is_helxa_analy(_status)) {
+                             bar.indeterminate = true
                              set_success_text(Common.HELXA_TIPS.done)
                              status_timer.stop()
                          }
@@ -130,26 +131,27 @@ Rectangle {
         id: chart_timer
         repeat: true
         interval: _interval
-        onTriggered: ()=>{
-                         var obj = root.sample_data
-                         var func_ack = obj[Common.FUNC_ACK];
+        onTriggered: () => {
+                         var obj = sample_data
+                         var func_ack = obj[Common.FUNC_ACK]
 
                          // 未准备好
-                         if(func_ack === 0 && flow_x === 0) {
-                             return;
+                         if (func_ack === 0 && flow_x === 0) {
+                             return
                          }
                          // 结束
-                         if(flow_x > 10 && Common.is_helxa_finish(_status)) {
-                             root.appendLog("测试结束 : "+ Common.get_status_info(_status))
-                             finish();
-                             return;
+                         if (flow_x > 10 && Common.is_helxa_finish(_status)) {
+                             root.appendLog(
+                                 "测试结束 : " + Common.get_status_info(_status))
+                             finish()
+                             return
                          }
 
                          if (_start_time === 0) {
-                             var update_time = new Date(obj[Common.UPDATE_TIME]).getTime();
-                             _start_time = update_time;
+                             var update_time = new Date(obj[Common.UPDATE_TIME]).getTime()
+                             _start_time = update_time
                              reset_data()
-                             return;
+                             return
                          }
 
                          addFlowRt(obj)
@@ -158,43 +160,41 @@ Rectangle {
 
     function addFlowRt(obj) {
         var flow_rt = obj[Common.FLOW_RT] / 10.0
-        if(Common.is_helxa_analy(_status)) {
-            arr_flow_rt.splice(0, arr_flow_rt.length);
-            return;
-        }
 
-        if(arr_flow_rt.length !== flow_x ){
-            return;
-        }
-
+        //        if (Common.is_helxa_analy(_status)) {
+        //            arr_flow_rt.splice(0, arr_flow_rt.length)
+        //            return
+        //        }
         arr_flow_rt.push(flow_rt)
 
-        var len = Math.min(arr_flow_rt.length, appSettings.aver_num);
-        let lastElements = arr_flow_rt.slice(-len);
-        let sum = lastElements.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        let average = sum / len;
+        var trace_umd1 = obj[Common.TRACE_UMD1]
+        arr_umd1.push(trace_umd1)
 
-        av_flow_rt = average;
-        flow_x +=  1;
+        var len = Math.min(arr_flow_rt.length, appSettings.aver_num)
+        let lastElements = arr_flow_rt.slice(-len)
+        let sum = lastElements.reduce(
+                (accumulator, currentValue) => accumulator + currentValue, 0)
+        let average = sum / len
 
-//        if(appSettings.use_anim_ball){
-            if(average > 0){
+        av_flow_rt = average
+        flow_x += 1
+
+        if (Common.is_helxa_sample(_status)) {
+
+            if (average > 0) {
                 ball.append(average)
             }
-//        } else {
-            if(appSettings.use_real_red_line){
-                chart.append(flow_x,  Common.mapValue(average));
+            if (appSettings.use_real_red_line) {
+                chart.append(flow_x, Common.mapValue(average))
             } else {
-                chart.append(flow_x,  Common.mapValue2(average));
+                chart.append(flow_x, Common.mapValue2(average))
             }
-//        }
 
-
-        if(average > 0) {
-            chart2.append(flow_x, flow_rt);
+            if (average > 0) {
+                chart2.append(flow_x, flow_rt)
+            }
         }
     }
-
 
     Column {
         anchors.fill: parent
@@ -205,7 +205,7 @@ Rectangle {
             height: 40
             width: parent.width
             anchors.topMargin: 6
-            color:'#f0ffff'
+            color: '#f0ffff'
 
             Text {
                 id: txt
@@ -217,7 +217,7 @@ Rectangle {
             }
 
             ProgressBar {
-                width:  parent.width
+                width: parent.width
                 height: 6
                 indeterminate: true
                 id: bar
@@ -226,10 +226,10 @@ Rectangle {
             ComboBox {
                 id: cb
                 currentIndex: appSettings.aver_num - 1
-                height: parent.height *2 /3
+                height: parent.height * 2 / 3
                 anchors.verticalCenter: parent.verticalCenter
                 displayText: "灵敏度:" + currentText
-                model:[1,2,3,4,5]
+                model: [1, 2, 3, 4, 5]
                 onCurrentIndexChanged: {
                     appSettings.aver_num = currentIndex + 1
                 }
@@ -242,7 +242,7 @@ Rectangle {
                 checked: appSettings.use_real_red_line
                 text: "45-55"
                 onCheckedChanged: {
-                    appSettings.use_real_red_line = checked;
+                    appSettings.use_real_red_line = checked
                 }
             }
 
@@ -252,20 +252,17 @@ Rectangle {
                 checked: appSettings.use_anim_ball
                 text: "ball"
                 onCheckedChanged: {
-                    appSettings.use_anim_ball = checked;
+                    appSettings.use_anim_ball = checked
                 }
             }
         }
-
-
-
 
         Row {
             width: parent.width
             height: parent.height - r1.height - 6
 
             Item {
-                width: show_result_chart ? parent.width/2 : parent.width
+                width: show_result_chart ? parent.width / 2 : parent.width
                 height: parent.height
 
                 Ball {
@@ -283,20 +280,31 @@ Rectangle {
 
                     SplineSeries {
                         color: 'red'
-                        XYPoint { x: 0; y: 30 }
-                        XYPoint { x: 120; y: 30 }
+                        XYPoint {
+                            x: 0
+                            y: 30
+                        }
+                        XYPoint {
+                            x: 120
+                            y: 30
+                        }
                         axisX: xAxis
                         axisY: yAxis
                     }
 
                     SplineSeries {
                         color: 'red'
-                        XYPoint { x: 0; y: 70 }
-                        XYPoint { x: 120; y: 70 }
+                        XYPoint {
+                            x: 0
+                            y: 70
+                        }
+                        XYPoint {
+                            x: 120
+                            y: 70
+                        }
                         axisX: xAxis
                         axisY: yAxis
                     }
-
 
                     LineSeries {
                         id: chart
@@ -315,8 +323,8 @@ Rectangle {
 
                     CategoryAxis {
                         id: yAxis
-                        min: -15  // 最小值，避免出现0值
-                        max: 85   // 最大值
+                        min: -15 // 最小值，避免出现0值
+                        max: 85 // 最大值
                         labelFormat: "%.0f"
                         labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
                         titleText: "FLOW_RT (ml/s)"
@@ -361,7 +369,6 @@ Rectangle {
                         }
                     }
                 }
-
             }
 
             ChartView {
@@ -383,7 +390,7 @@ Rectangle {
                 ValueAxis {
                     id: xAxis2
                     min: 0
-                    max:  12 * 1000 / _interval
+                    max: 12 * 1000 / _interval
                     tickCount: 11
                     labelFormat: "%.0f"
                 }
@@ -395,10 +402,7 @@ Rectangle {
                     tickCount: 10
                     labelFormat: "%.0f"
                 }
-
             }
         }
-
     }
-
 }
