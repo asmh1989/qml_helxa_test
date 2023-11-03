@@ -4,5 +4,6 @@
         <file>img/bg_none.png</file>
         <file>img/back.png</file>
         <file>img/menu.png</file>
+        <file>config/pc_print.html</file>
     </qresource>
 </RCC>

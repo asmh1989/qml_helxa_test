@@ -93,6 +93,10 @@ int main(int argc, char *argv[]) {
 
   QQmlApplicationEngine engine;
   // 设置C++对象的所有权为QQmlEngine::CppOwnership
+  engine.rootContext()->setContextProperty("sm", SingletonManager::instance());
+
+  SingletonManager::instance()->init(&engine);
+
   engine.setObjectOwnership(SingletonManager::instance(),
                             QQmlEngine::CppOwnership);
 

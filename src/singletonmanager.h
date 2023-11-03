@@ -1,13 +1,7 @@
 #ifndef SINGLETONMANAGER_H
 #define SINGLETONMANAGER_H
 
-#include <QJsonObject>
 #include <QObject>
-#include <QSettings>
-#include <QStringList>
-#include <QThreadPool>
-#include <QtSerialPort/QSerialPort>
-#include <QtSerialPort/QSerialPortInfo>
 #include <functional>
 
 class SingletonManager : public QObject {
@@ -15,8 +9,16 @@ class SingletonManager : public QObject {
  public:
   static SingletonManager* instance();
 
+  Q_PROPERTY(QString picPath READ picPath CONSTANT)
+
+  Q_INVOKABLE bool showPrintDialog();
+  Q_INVOKABLE void print(QString html);
+  Q_INVOKABLE void openPreview();
+  QString picPath() const;
+
  public slots:
-  void receive();
+  //  void receive();
+  void init(QObject* application);
 
  signals:
   // 信号用于触发回调
@@ -24,19 +26,12 @@ class SingletonManager : public QObject {
 
  private:
   explicit SingletonManager();
-  QString openSerialPort(const QString& port, int rate);
-
-  QString sendData(QString addr, QString code, QString data,
-                   bool circle = false);
-
-  QStringList getSerialPortList();
 
   ~SingletonManager();
-  void init();
   static SingletonManager* m_instance;
-  QSerialPort serial;  // 定义全局串口对象
-  QByteArray buffer;
-  QThreadPool customThreadPool;
+
+  QObject* _application;
+  QString m_PicPath;
 };
 
 #endif  // SINGLETONMANAGER_H

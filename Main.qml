@@ -207,4 +207,12 @@ ApplicationWindow {
         property real standard_arg3: -0.0126
         property real standard_arg4: 1
     }
+
+    function showPrintDialog() {
+        sm.showPrintDialog()
+    }
+
+    Connections {
+        target: sm
+    }
 }

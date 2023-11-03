@@ -85,6 +85,48 @@ Item {
                     }
 
                     Action {
+                        id: pp
+                        text: qsTr("打印")
+                        onTriggered: {
+                            messageDialog.open()
+
+                            var component = Qt.createComponent(
+                                        "./view/PreviewWindow.qml")
+                            if (component.status === Component.Ready) {
+                                var componentObject = component.createObject(
+                                            window)
+
+                                var result = arr_result.filter(
+                                            (e, i) => arr_ids_enable[i])[0]
+                                var result_data = arr_data.filter(
+                                            e => e[0] === result[result.length - 1]).map(
+                                            e => [Common.mapValue(
+                                                      parseFloat(
+                                                          e[1])), parseInt(
+                                                      e[2])])
+
+                                //                                console.log("result = " + JSON.stringify(
+                                //                                                result) + "result_data = " + JSON.stringify(
+                                //                                                result_data))
+                                if (componentObject) {
+                                    componentObject.addData(result_data, result)
+                                    setTimeout(() => {
+                                                   componentObject.saveImage()
+                                               }, 1000)
+                                    // 在需要时销毁组件
+                                    setTimeout(() => {
+                                                   componentObject.destroy()
+                                                   messageDialog.close()
+                                                   showPrintDialog()
+                                               }, 1500)
+                                }
+                            } else {
+                                console.log("component.status = " + component.status)
+                            }
+                        }
+                    }
+
+                    Action {
                         enabled: row_slide.visible
                         text: qsTr("隐藏帧间隔")
                         onTriggered: {
@@ -92,6 +134,30 @@ Item {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    Dialog {
+        id: messageDialog
+
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        width: 200
+        height: 200
+        parent: Overlay.overlay
+        modal: true
+
+        Column {
+            spacing: 20
+            anchors.fill: parent
+            BusyIndicator {
+                width: parent.width
+                height: 120
+            }
+            Label {
+                text: qsTr("请稍后..")
+                anchors.horizontalCenter: parent.horizontalCenter
             }
         }
     }
@@ -191,11 +257,6 @@ Item {
 
                 onVisibleChanged: {
 
-                    //                    console.log("visible changed...")
-                    //                    rs1.setValues(appSettings.umd_state1,
-                    //                                  appSettings.umd_state2)
-                    //                    rs1.setValues(appSettings.umd_state3,
-                    //                                  appSettings.umd_state4)
                 }
 
                 MySlide {
@@ -354,6 +415,7 @@ Item {
     function refresh_label() {
         var dd = test_umd_av.map((e, i) => result_obj[i] + "-" + e).filter(
                     (e, i) => arr_ids_enable[i])
+        pp.enabled = (dd.length > 0)
 
         if (dd.length === 0) {
             pdd.text = ""

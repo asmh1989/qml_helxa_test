@@ -6,7 +6,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.3 REQUIRED COMPONENTS Gui Charts Quick Core QuickControls2 WebSockets SerialPort)
+find_package(Qt6 6.3 REQUIRED COMPONENTS Gui
+    Charts Quick Core QuickControls2 WebSockets SerialPort
+    PrintSupport
+)
 
 add_subdirectory(Qt-AES)
 
@@ -31,7 +34,6 @@ qt6_add_qml_module(appqt-websockerts
         "qtquickcontrols2.conf"
         QML_FILES common.js
         QML_FILES Status.qml
-#        QML_FILES Mylabel.qml
         QML_FILES Toast.qml
         QML_FILES ToastManager.qml
         QML_FILES Sno.qml
@@ -47,6 +49,7 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES Rootview.qml
         QML_FILES view/MySlide.qml
         SOURCES src/qmlemsocket.h src/qmlemsocket.cpp
+        QML_FILES view/PreviewWindow.qml
 )
 
 
@@ -77,6 +80,7 @@ target_link_libraries(appqt-websockerts
     Qt6::Charts
     Qt::Gui
     Qt6::SerialPort
+    Qt6::PrintSupport
     QtAES
 )
 

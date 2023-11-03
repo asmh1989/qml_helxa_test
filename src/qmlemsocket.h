@@ -85,8 +85,6 @@ class QmlEmSocket : public QObject, public QQmlParserStatus {
   void setSocket(QWebSocket *socket);
 
   void setStatus(Status status);
-  //  void open();
-  //  void close();
   void setErrorString(QString errorString = QString());
   void recvFrame(const SerialData &data);
 

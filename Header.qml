@@ -64,7 +64,7 @@ Rectangle {
             ComboBox {
                 id: cb
                 height: parent.height
-                width: 192
+                width: 168
                 currentIndex: appSettings.helxa_type
                 onCurrentTextChanged: {
                     appSettings.helxa_type = cb.currentIndex
