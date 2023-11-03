@@ -2,6 +2,7 @@
 #define SINGLETONMANAGER_H
 
 #include <QObject>
+#include <QPrinter>
 #include <functional>
 
 class SingletonManager : public QObject {
@@ -12,13 +13,13 @@ class SingletonManager : public QObject {
   Q_PROPERTY(QString picPath READ picPath CONSTANT)
 
   Q_INVOKABLE bool showPrintDialog();
-  Q_INVOKABLE void print(QString html);
   Q_INVOKABLE void openPreview();
   QString picPath() const;
+  void init(QObject* application);
 
  public slots:
   //  void receive();
-  void init(QObject* application);
+  void printer(QPrinter* printer);
 
  signals:
   // 信号用于触发回调
@@ -32,6 +33,8 @@ class SingletonManager : public QObject {
 
   QObject* _application;
   QString m_PicPath;
+
+  QPrinter m_printer;
 };
 
 #endif  // SINGLETONMANAGER_H
