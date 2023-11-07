@@ -13,7 +13,7 @@ Rectangle {
     property int times: 0
 
     function is_sno() {
-        return cb.currentText === "SNO"
+        return cb.currentText.toUpperCase() === "SNO"
     }
 
     Column {

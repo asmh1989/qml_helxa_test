@@ -124,7 +124,9 @@ function get_sample_req(delay) {
 function get_start_helxa_req(command) {
     return {
         "method": METHOD_START_HELXA,
-        "args": [command]
+        "args": {
+            "command": command
+        }
     }
 }
 

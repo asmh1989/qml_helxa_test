@@ -22,17 +22,17 @@ Item {
 
     property var send_time
 
-    property var arr_helxa: [//                "NONE",
-        //                "FENO50_TRAIN1",
-        //                "FENO50_TRAIN2",
-        "FENO50_MODE1", //                "FENO50_MODE2",
-        //                "FENO200_MODE1",
-        //                "FENO200_MODE2",
-        "SNO" //                "NNO_MODE1",
-        //                "NNO_MODE2",
-        //                "ECO",
-        //                "SCO",
-        //                "CLEAN",
+    property var arr_helxa: [//                "None",
+        //                "Feno50Train1",
+        //                "Feno50Train2",
+        "Feno50Mode1", //                "Feno50Mode2",
+        //                "Feno200Mode1",
+        //                "Feno200Mode2",
+        "Sno" //                "NnoMode1",
+        //                "NnoMode2",
+        //                "Eco",
+        //                "Sco",
+        //                "Clean",
     ]
 
     FileIO {
@@ -113,7 +113,8 @@ Item {
         url: appSettings.url
         type: (appSettings.use_serialport ? EmSocket.SerialPort : EmSocket.WebSocket)
         onTextMessageReceived: function (message) {
-            //            console.log("耗时: " + (new Date().getTime() - send_time))
+            //            console.log("耗时: " + (new Date().getTime(
+            //                                      ) - send_time) + " " + message)
             var obj = JSON.parse(message)
             if (obj.method === "test") {
                 socket.notifyTestOk()
