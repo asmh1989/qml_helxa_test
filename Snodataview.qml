@@ -177,37 +177,76 @@ Item {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        Row {
+        //        Row {
+        //            clip: true
+        //            Layout.alignment: Qt.AlignHCenter
+        //            visible: arr_ids.length > 0
+        //            width: parent.width
+        //            height: 28 // 固定高度，用于显示一行
+        //            //                width: parent.width
+        //            //            height: parent.width
+        //            spacing: 6
+
+        //            Repeater {
+        //                model: arr_ids.length // 这里的10可以替换为你的数据数组的长度
+        //                CheckBox {
+        //                    required property int index
+        //                    checked: arr_ids_enable[index]
+        //                    text: arr_ids[index]
+        //                    onClicked: {
+        //                        var u = umd_chart.series(arr_ids[index] + "")
+        //                        if (u) {
+        //                            u.visible = !u.visible
+        //                        }
+
+        //                        var f = flow_chart.series(arr_ids[index] + "")
+        //                        if (f) {
+        //                            f.visible = !f.visible
+        //                        }
+
+        //                        arr_ids_enable[index] = !arr_ids_enable[index]
+        //                        refresh_label()
+        //                        refresh_xy()
+        //                    }
+        //                }
+        //            }
+        //        }
+        ListView {
+            orientation: ListView.Horizontal
             clip: true
             Layout.alignment: Qt.AlignHCenter
             visible: arr_ids.length > 0
             width: parent.width
-            height: 28 // 固定高度，用于显示一行
-            //                width: parent.width
-            //            height: parent.width
-            spacing: 6
+            height: ss.visible ? 40 : 30 // 固定高度，用于显示一行
+            spacing: 2
+            ScrollBar.horizontal: ScrollBar {
+                id: ss
+                snapMode: ScrollBar.SnapOnRelease
+                policy: ScrollBar.AsNeeded
+                minimumSize: 0.1
+                size: 0.2
+                active: true
+            }
 
-            Repeater {
-                model: arr_ids.length // 这里的10可以替换为你的数据数组的长度
-                CheckBox {
-                    required property int index
-                    checked: arr_ids_enable[index]
-                    text: arr_ids[index]
-                    onClicked: {
-                        var u = umd_chart.series(arr_ids[index] + "")
-                        if (u) {
-                            u.visible = !u.visible
-                        }
+            model: arr_ids.length // 这里的10可以替换为你的数据数组的长度
 
-                        var f = flow_chart.series(arr_ids[index] + "")
-                        if (f) {
-                            f.visible = !f.visible
-                        }
-
-                        arr_ids_enable[index] = !arr_ids_enable[index]
-                        refresh_label()
-                        refresh_xy()
+            delegate: CheckBox {
+                checked: arr_ids_enable[index]
+                text: arr_ids[index]
+                onClicked: {
+                    var u = umd_chart.series(arr_ids[index] + "")
+                    if (u) {
+                        u.visible = !u.visible
                     }
+
+                    var f = flow_chart.series(arr_ids[index] + "")
+                    if (f) {
+                        f.visible = !f.visible
+                    }
+
+                    arr_ids_enable[index] = !arr_ids_enable[index]
+                    refresh_label()
+                    refresh_xy()
                 }
             }
         }

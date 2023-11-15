@@ -10,6 +10,7 @@ import "./view"
 Rectangle {
     property int umd1_x: 0
     property int umd1_min_y: 0
+    property int umd1_max_y: 0
 
     /// 用于画chart
     readonly property int _interval: 100
@@ -115,17 +116,16 @@ Rectangle {
             umdAxisX.max += 10
         }
 
-        if (umd1_min_y < average) {
+        if (umd1_min_y > average) {
             umd1_min_y = average
         }
 
-        if (umd1_min_y < umd1AxisY.min + 50) {
-            umd1AxisY.min = Math.round(umd1_min_y) - 100
+        if (average > umd1_max_y) {
+            umd1_max_y = average
         }
 
-        if (average > umd1AxisY.max - 50) {
-            umd1AxisY.max = Math.ceil(average) + 100
-        }
+        umd1AxisY.min = Math.round(umd1_min_y - Math.abs(umd1_min_y) / 10 - 1)
+        umd1AxisY.max = Math.ceil(umd1_max_y + Math.abs(umd1_max_y) / 10 + 1)
 
         lines_umd1.append(umd1_x, average)
     }
@@ -134,6 +134,8 @@ Rectangle {
         result.text = ""
         lines_umd1.clear()
         chart.clear()
+        umd1_min_y = 100000
+        umd1_max_y = 0
         chart_timer.start()
     }
 

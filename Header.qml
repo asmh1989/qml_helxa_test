@@ -140,7 +140,7 @@ Rectangle {
                 height: parent.height
                 validator: IntValidator {
                     bottom: 0
-                    top: 99
+                    top: 9999
                 }
             }
 

@@ -379,7 +379,7 @@ Item {
         interval: 1000
         onTriggered: () => {
                          if (!Common.is_helxa_finish(_status)) {
-                             console.log("refresh_timer refresh")
+                             //                             console.log("refresh_timer refresh")
                              refresh()
                          } else {
                              refresh_timer.stop()
