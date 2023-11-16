@@ -227,7 +227,7 @@ Rectangle {
         times += 1
         var msg = "开始循环离线测试 times = " + times
         root.showToastAndLog(msg)
-        root.start_helxa_test("SNO")
+        root.start_helxa_test("Sno")
     }
 
     Timer {
