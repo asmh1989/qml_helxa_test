@@ -259,4 +259,18 @@ Rectangle {
             anchors.centerIn: parent
         }
     }
+
+    Connections {
+        target: window
+        function onExhaleStartingChanged() {
+            if (whichView === 0 && header.is_sno()) {
+                console.log("Sno onexhaleStartingChanged")
+                if (exhaleStarting) {
+                    start()
+                } else {
+                    finish()
+                }
+            }
+        }
+    }
 }

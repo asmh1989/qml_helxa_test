@@ -3,7 +3,10 @@ import QtQuick.Window
 import QtQuick.Controls
 
 import "common.js" as Common
+import "./view"
+
 import Qt.labs.settings 1.0
+import FileIO
 
 ApplicationWindow {
     id: window
@@ -34,6 +37,25 @@ ApplicationWindow {
     property string _status: ""
     property var sample_data
 
+    property int whichView: 0
+
+    property bool exhaleStarting: false
+
+    property bool forceExhaleStop: false
+
+    property var arr_helxa: [//                "None",
+        //                "Feno50Train1",
+        //                "Feno50Train2",
+        "Feno50Mode1", //                "Feno50Mode2",
+        //                "Feno200Mode1",
+        //                "Feno200Mode2",
+        "Sno" //                "NnoMode1",
+        //                "NnoMode2",
+        //                "Eco",
+        //                "Sco",
+        //                "Clean",
+    ]
+
     function get_result_prefix() {
         return "record_sno/" + appSettings.mac_code + "-" + _time_name
     }
@@ -44,6 +66,69 @@ ApplicationWindow {
 
     function get_flow_rt_path() {
         return get_result_prefix() + "/data.csv"
+    }
+
+    function save_to_file(diff, f1, f2) {
+        var obj = sample_data
+        var helxa_type = arr_helxa[appSettings.helxa_type]
+        var trace_umd1_temp = obj[Common.TRACE_UMD1_TEMP] / 100.0
+        var ambient_temp = obj[Common.AMBIENT_TEMP] / 100.0
+        var ambient_humi = obj[Common.AMBIENT_HUMI]
+        var result_data = [appSettings.mac_code, Common.formatDate(
+                               ), appSettings.indoor_temp, ambient_temp, ambient_humi, trace_umd1_temp, helxa_type, f1, f2, appSettings.puppet_num, appSettings.puppet_con, diff, appSettings.test_id]
+        var res = myFile.saveToCsv(get_result_path(), result_header,
+                                   [result_data])
+
+        //        appendLog(res)
+        var data_ = arr_flow_rt.map(
+                    (element, index) => [appSettings.test_id, element, arr_umd1[index]])
+
+        var res2 = myFile.saveToCsv(get_flow_rt_path(), arr_data_header, data_)
+        //        appendLog(res2)
+        appSettings.test_id += 1
+    }
+
+    function getResultMsg() {
+        var success = _status === Common.STATUS_END_FINISH
+        var msg = ""
+
+        if (success) {
+            // 测试完成
+            var len = arr_umd1.length
+            if (len > 501) {
+                var lastElements = arr_umd1.slice(appSettings.umd_state1,
+                                                  appSettings.umd_state2)
+                var sum = lastElements.reduce(
+                            (accumulator, currentValue) => accumulator + currentValue,
+                            0)
+                var av1 = sum / lastElements.length
+
+                lastElements = arr_umd1.slice(appSettings.umd_state3,
+                                              appSettings.umd_state4)
+                sum = lastElements.reduce(
+                            (accumulator, currentValue) => accumulator + currentValue,
+                            0)
+                var av2 = sum / lastElements.length
+                var r = Math.abs(av1 - av2).toFixed(2)
+                var fix_r = fix_umd(
+                            sample_data[Common.TRACE_UMD1_TEMP] / 100.0, r)
+                msg = "测试成功: 气袋浓度(" + appSettings.puppet_con + ") umd1均值差 = "
+                        + fix_r + "/" + fix_umd2(fix_r) + " (ppb)"
+                save_to_file(r, fix_r, fix_umd2(fix_r))
+            } else {
+                success = false
+                msg = "帧数太少!"
+            }
+        } else {
+            msg = Common.get_status_info(_status)
+        }
+
+        if (!success) {
+            msg = "测试失败: " + msg + "! 请重试"
+        }
+
+        toast.show(msg, 2000)
+        return msg
     }
 
     Component.onCompleted: {
@@ -77,6 +162,12 @@ ApplicationWindow {
         id: toast
     }
 
+    FileIO {
+        id: myFile
+        source: "test_file.txt"
+        onError: console.log(msg)
+    }
+
     Component.onDestruction: {
         appSettings.sceen_x = window.x
         appSettings.sceen_y = window.y
@@ -103,7 +194,6 @@ ApplicationWindow {
 
         Component {
             id: mainView
-
             Rootview {}
         }
 
@@ -114,13 +204,25 @@ ApplicationWindow {
                 id: sno_data_view
             }
         }
+
+        Component {
+            id: newFnoView
+            NewFenoMode {}
+        }
     }
 
     function pushSnoView() {
+        whichView = 2
         stack.push(snoview)
     }
 
+    function pushNewFenoView() {
+        whichView = 3
+        stack.push(newFnoView)
+    }
+
     function pop() {
+        whichView = 0
         stack.pop()
     }
 

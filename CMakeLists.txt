@@ -51,6 +51,7 @@ qt6_add_qml_module(appqt-websockerts
         SOURCES src/qmlemsocket.h src/qmlemsocket.cpp
         QML_FILES view/PreviewWindow.qml
         QML_FILES view/Smile.qml
+        QML_FILES view/NewFenoMode.qml
 )
 
 

@@ -69,7 +69,7 @@ Rectangle {
                 onCurrentTextChanged: {
                     appSettings.helxa_type = cb.currentIndex
                 }
-                model: root.arr_helxa
+                model: arr_helxa
             }
 
             Button {
@@ -89,6 +89,17 @@ Rectangle {
                 onClicked: {
                     save_cache()
                     root.stop_helxa_test()
+                }
+            }
+
+            Button {
+                height: parent.height
+                text: "正式开始"
+                enabled: (is_open && !root.in_helxa)
+                onClicked: {
+                    save_cache()
+                    pushNewFenoView()
+                    root.start_helxa_test(cb.currentText)
                 }
             }
             Button {

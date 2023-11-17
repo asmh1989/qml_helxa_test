@@ -8,9 +8,10 @@ import "./view"
 Rectangle {
     color: Qt.rgba(100, 100, 100, 100)
     width: parent.width
-    height: 70
 
+    height: timeValue ? 70 : 20
     property bool starting: false
+    property bool timeValue: true
 
     //    property var data
     function dataChanged(obj) {
@@ -29,6 +30,7 @@ Rectangle {
         anchors.fill: parent
 
         Rectangle {
+            id: r1
             height: 20
             width: parent.width
 
@@ -79,8 +81,10 @@ Rectangle {
         }
 
         Rectangle {
+            id: r2
             height: 20
             width: parent.width
+            visible: timeValue
 
             MyLabel {
                 anchors.centerIn: parent
@@ -92,8 +96,10 @@ Rectangle {
         }
 
         Rectangle {
+            id: r3
             height: 20
             width: parent.width
+            visible: timeValue
 
             MyLabel {
                 anchors.centerIn: parent
@@ -109,6 +115,14 @@ Rectangle {
                 anchors.rightMargin: 4
                 height: parent.height
             }
+        }
+    }
+
+    Connections {
+        target: window
+
+        function onSample_dataChanged() {
+            dataChanged(sample_data)
         }
     }
 }
