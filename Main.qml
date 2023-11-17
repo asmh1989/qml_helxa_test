@@ -7,9 +7,9 @@ import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: window
-    width: dp(860)
-    height: dp(680)
-    minimumWidth: dp(760)
+    width: dp(840)
+    height: dp(600)
+    minimumWidth: dp(840)
     //    minimumHeight: dp(600)
     visible: true
     title: qsTr("em-exhale")
@@ -91,22 +91,6 @@ ApplicationWindow {
             initialItem: mainView
             anchors.fill: parent
 
-            //            pushEnter: Transition {
-            //                PropertyAnimation {
-            //                    property: "y"
-            //                    from: window.height
-            //                    to: 0
-            //                    duration: 200
-            //                }
-            //            }
-            //            popExit: Transition {
-            //                PropertyAnimation {
-            //                    property: "y"
-            //                    from: 0
-            //                    to: window.height
-            //                    duration: 200
-            //                }
-            //            }
             Transition {
                 PropertyAnimation {
                     property: "opacity"

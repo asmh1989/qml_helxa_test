@@ -50,6 +50,7 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES view/MySlide.qml
         SOURCES src/qmlemsocket.h src/qmlemsocket.cpp
         QML_FILES view/PreviewWindow.qml
+        QML_FILES view/Smile.qml
 )
 
 

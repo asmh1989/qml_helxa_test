@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtCharts
 
 import "common.js" as Common
+import "./view"
 
 Rectangle {
     property var flow_datas: []
@@ -26,6 +27,7 @@ Rectangle {
             _start_time = 0
             show_result_chart = true
             bar.visible = false
+            smile.append(0)
         }
     }
 
@@ -65,7 +67,7 @@ Rectangle {
     Timer {
         id: status_timer
         repeat: true
-        interval: 200
+        interval: 100
         onTriggered: () => {
                          if (!root.in_helxa) {
                              if (Common.is_helxa_failed(_status)) {
@@ -181,13 +183,19 @@ Rectangle {
 
         if (Common.is_helxa_sample(_status)) {
 
+            if (flow_x > xAxis.max) {
+                xAxis.max += 10
+            }
+
             if (average > 0) {
                 ball.append(average)
             }
             if (appSettings.use_real_red_line) {
                 chart.append(flow_x, Common.mapValue(average))
+                smile.append(Common.mapValue(average))
             } else {
                 chart.append(flow_x, Common.mapValue2(average))
+                smile.append(Common.mapValue2(average))
             }
 
             if (average > 0) {
@@ -271,101 +279,116 @@ Rectangle {
                     visible: appSettings.use_anim_ball
                 }
 
-                ChartView {
+                Item {
                     anchors.fill: parent
-                    id: char_view
-                    antialiasing: true
-                    legend.visible: false
                     visible: !appSettings.use_anim_ball
+                    anchors.margins: 10
 
-                    SplineSeries {
-                        color: 'red'
-                        XYPoint {
-                            x: 0
-                            y: 30
-                        }
-                        XYPoint {
-                            x: 120
-                            y: 30
-                        }
-                        axisX: xAxis
-                        axisY: yAxis
+                    Smile {
+                        id: smile
+                        height: parent.height
                     }
 
-                    SplineSeries {
-                        color: 'red'
-                        XYPoint {
-                            x: 0
-                            y: 70
+                    ChartView {
+                        anchors {
+                            left: smile.right
+                            right: parent.right
                         }
-                        XYPoint {
-                            x: 120
-                            y: 70
-                        }
-                        axisX: xAxis
-                        axisY: yAxis
-                    }
+                        height: parent.height
 
-                    LineSeries {
-                        id: chart
-                        axisX: xAxis
-                        axisY: yAxis
-                        color: 'blue'
-                    }
+                        id: char_view
+                        antialiasing: true
+                        legend.visible: false
 
-                    ValueAxis {
-                        id: xAxis
-                        min: 0
-                        max: 12 * 1000 / _interval
-                        tickCount: 11
-                        labelFormat: "%.0f"
-                    }
-
-                    CategoryAxis {
-                        id: yAxis
-                        min: -15 // 最小值，避免出现0值
-                        max: 85 // 最大值
-                        labelFormat: "%.0f"
-                        labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
-                        titleText: "FLOW_RT (ml/s)"
-
-                        CategoryRange {
-                            label: "-20"
-                            endValue: -15
-                        }
-                        CategoryRange {
-                            label: "0"
-                            endValue: 0
-                        }
-                        CategoryRange {
-                            label: "30"
-                            endValue: 15
-                        }
-                        CategoryRange {
-                            label: "45"
-                            endValue: 30
-                        }
-                        CategoryRange {
-                            label: "47"
-                            endValue: 40
-                        }
-                        CategoryRange {
-                            label: "50"
-                            endValue: 50
-                        }
-                        CategoryRange {
-                            label: "53"
-                            endValue: 60
+                        SplineSeries {
+                            color: 'red'
+                            XYPoint {
+                                x: 0
+                                y: 30
+                            }
+                            XYPoint {
+                                x: 200
+                                y: 30
+                            }
+                            axisX: xAxis
+                            axisY: yAxis
                         }
 
-                        CategoryRange {
-                            label: "55"
-                            endValue: 70
+                        SplineSeries {
+                            color: 'red'
+                            XYPoint {
+                                x: 0
+                                y: 70
+                            }
+                            XYPoint {
+                                x: 120
+                                y: 70
+                            }
+                            axisX: xAxis
+                            axisY: yAxis
                         }
 
-                        CategoryRange {
-                            label: "70"
-                            endValue: 85
+                        LineSeries {
+                            id: chart
+                            axisX: xAxis
+                            axisY: yAxis
+                            color: 'blue'
+                        }
+
+                        ValueAxis {
+                            id: xAxis
+                            min: 0
+                            max: 12 * 1000 / _interval
+                            tickCount: 11
+                            labelFormat: "%.0f"
+                        }
+
+                        CategoryAxis {
+                            id: yAxis
+                            min: -15 // 最小值，避免出现0值
+                            max: 85 // 最大值
+                            labelFormat: "%.0f"
+                            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
+                            titleText: "FLOW_RT (ml/s)"
+
+                            CategoryRange {
+                                label: "-20"
+                                endValue: -15
+                            }
+                            CategoryRange {
+                                label: "0"
+                                endValue: 0
+                            }
+                            CategoryRange {
+                                label: "30"
+                                endValue: 15
+                            }
+                            CategoryRange {
+                                label: "45"
+                                endValue: 30
+                            }
+                            CategoryRange {
+                                label: "47"
+                                endValue: 40
+                            }
+                            CategoryRange {
+                                label: "50"
+                                endValue: 50
+                            }
+                            CategoryRange {
+                                label: "53"
+                                endValue: 60
+                            }
+
+                            CategoryRange {
+                                label: "55"
+                                endValue: 70
+                            }
+
+                            CategoryRange {
+                                label: "70"
+                                endValue: 85
+                            }
                         }
                     }
                 }

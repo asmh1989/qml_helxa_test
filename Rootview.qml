@@ -228,7 +228,7 @@ Item {
         id: footer
         color: Qt.rgba(100, 100, 100, 100)
         anchors.bottom: parent.bottom
-        height: 128
+        height: 64
         width: parent.width
 
         ScrollView {
@@ -361,7 +361,7 @@ Item {
     Timer {
         id: timer
         repeat: true
-        interval: 100
+        interval: 60
         onTriggered: () => {
                          if (!in_helxa) {
                              helxa_reset()

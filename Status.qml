@@ -66,7 +66,7 @@ Rectangle {
                     id: trace_umd1
                     name: "检测器1实时"
                     value: "0"
-                    unit: "ppb"
+                    unit: ""
                 }
 
                 MyLabel {
