@@ -68,9 +68,9 @@ Item {
 
     function refresh() {
         var step = parent.height / 100
-        var new_y = (100 - (flow + 15)) * step - parent.width
+        var new_y = (100 - (flow + 15)) * step - parent.width / 2
         var s_t = 15 * step - parent.width / 2
-        var s_b = 55 * step + parent.width / 2
+        var s_b = 55 * step - parent.width / 2
         if (new_y > s_t && new_y < s_b) {
             img.source = "/img/smile.png"
         } else {
@@ -78,6 +78,8 @@ Item {
         }
         if (new_y < 0) {
             new_y = 0
+        } else if (new_y > parent.height - parent.width) {
+            new_y = parent.height - parent.width
         }
 
         img.y = new_y

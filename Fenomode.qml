@@ -286,7 +286,8 @@ Rectangle {
 
                     Smile {
                         id: smile
-                        height: parent.height
+                        y: 28
+                        height: parent.height - 78
                     }
 
                     ChartView {
