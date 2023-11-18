@@ -119,6 +119,7 @@ Rectangle {
                          if (func_ack === 0 && flow_x === 0) {
                              return
                          }
+
                          // 结束
                          if (flow_x > 10 && Common.is_helxa_finish(_status)) {
                              console.log(
@@ -135,6 +136,12 @@ Rectangle {
                          }
 
                          addFlowRt(obj)
+
+                         if (Common.is_helxa_analy(_status)) {
+                             chart_timer.stop()
+                             pushAnalysisView()
+                             return
+                         }
                      }
     }
 
@@ -191,6 +198,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin: 10
                 onClicked: {
+                    bus.sendMessage(Common.MESSAGE_STOP_EXHALE)
                     pop()
                 }
             }
@@ -241,7 +249,7 @@ Rectangle {
                                 y: 30
                             }
                             XYPoint {
-                                x: 200
+                                x: 500
                                 y: 30
                             }
                             axisX: xAxis
@@ -255,7 +263,7 @@ Rectangle {
                                 y: 70
                             }
                             XYPoint {
-                                x: 120
+                                x: 500
                                 y: 70
                             }
                             axisX: xAxis
@@ -269,12 +277,66 @@ Rectangle {
                             color: 'blue'
                         }
 
-                        ValueAxis {
+                        CategoryAxis {
                             id: xAxis
                             min: 0
                             max: 12 * 1000 / _interval
-                            tickCount: 11
-                            labelFormat: "%.0f"
+                            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
+
+                            //                            tickCount: 10
+                            //                            labelFormat: "%.0f"
+                            CategoryRange {
+                                label: "0"
+                                endValue: 0
+                            }
+                            CategoryRange {
+                                label: "1"
+                                endValue: 10
+                            }
+                            CategoryRange {
+                                label: "2"
+                                endValue: 20
+                            }
+                            CategoryRange {
+                                label: "3"
+                                endValue: 30
+                            }
+                            CategoryRange {
+                                label: "4"
+                                endValue: 40
+                            }
+                            CategoryRange {
+                                label: "5"
+                                endValue: 50
+                            }
+                            CategoryRange {
+                                label: "6"
+                                endValue: 60
+                            }
+                            CategoryRange {
+                                label: "7"
+                                endValue: 70
+                            }
+                            CategoryRange {
+                                label: "8"
+                                endValue: 80
+                            }
+                            CategoryRange {
+                                label: "9"
+                                endValue: 90
+                            }
+                            CategoryRange {
+                                label: "10"
+                                endValue: 100
+                            }
+                            CategoryRange {
+                                label: "11"
+                                endValue: 110
+                            }
+                            CategoryRange {
+                                label: "12"
+                                endValue: 120
+                            }
                         }
 
                         CategoryAxis {
@@ -293,36 +355,14 @@ Rectangle {
                                 label: "0"
                                 endValue: 0
                             }
-                            //                            CategoryRange {
-                            //                                label: "30"
-                            //                                endValue: 15
-                            //                            }
                             CategoryRange {
                                 label: "45"
                                 endValue: 30
                             }
-
-                            //                            CategoryRange {
-                            //                                label: "47"
-                            //                                endValue: 40
-                            //                            }
-                            //                            CategoryRange {
-                            //                                label: "50"
-                            //                                endValue: 50
-                            //                            }
-                            //                            CategoryRange {
-                            //                                label: "53"
-                            //                                endValue: 60
-                            //                            }
                             CategoryRange {
                                 label: "55"
                                 endValue: 70
                             }
-
-                            //                            CategoryRange {
-                            //                                label: "70"
-                            //                                endValue: 85
-                            //                            }
                         }
                     }
                 }
@@ -335,8 +375,7 @@ Rectangle {
     }
 
     Component.onDestruction: {
-        reset_data()
-        forceExhaleStop = !forceExhaleStop
+        finish()
     }
 
     Connections {

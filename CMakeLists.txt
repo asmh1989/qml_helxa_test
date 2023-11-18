@@ -52,6 +52,8 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES view/PreviewWindow.qml
         QML_FILES view/Smile.qml
         QML_FILES view/NewFenoMode.qml
+        QML_FILES EventBus.qml
+        QML_FILES view/AnalysisView.qml
 )
 
 

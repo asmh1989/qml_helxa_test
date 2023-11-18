@@ -12,7 +12,7 @@ Item {
             color: 'gray'
             width: 1
         }
-        radius: 1
+        radius: 8
         color: 'white'
     }
 

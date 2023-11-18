@@ -7,5 +7,6 @@
         <file>config/pc_print.html</file>
         <file>img/cry.png</file>
         <file>img/smile.png</file>
+        <file>img/feno.png</file>
     </qresource>
 </RCC>

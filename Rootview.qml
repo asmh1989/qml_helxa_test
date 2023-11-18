@@ -39,11 +39,8 @@ Item {
             } else if (obj.method === Common.METHOD_HELXA_STARTED) {
                 if (in_helxa) {
                     appendLog("recv server command to start")
-                    //                    setTimeout(() => {
                     timer.restart()
                     exhaleStarting = true
-                    //                    chart_start()
-                    //                               }, 50)
                 }
                 return
             } else if (obj.method === Common.METHOD_HELXA_STARTING) {
@@ -183,22 +180,6 @@ Item {
         socket.sendTextMessage(msg)
     }
 
-    function chart_start() {
-        if (header.is_sno()) {
-            my_chart.start()
-        } else {
-            feno_chart.start()
-        }
-    }
-
-    //    function chart_stop() {
-    //        if (header.is_sno()) {
-    //            my_chart.finish()
-    //        } else {
-    //            feno_chart.finish()
-    //        }
-    //    }
-
     /// 呼吸检测重置
     function helxa_reset() {
         if (read_times > 50) {
@@ -295,7 +276,7 @@ Item {
         interval: 1000
         onTriggered: () => {
                          if (!Common.is_helxa_finish(_status)) {
-                             //                             console.log("refresh_timer refresh")
+                             console.log("refresh_timer refresh")
                              refresh()
                          } else {
                              refresh_timer.stop()
@@ -304,10 +285,12 @@ Item {
     }
 
     Connections {
-        target: window
+        target: bus
 
-        function onForceExhaleStop() {
-            stop_helxa_test()
+        function onMessageReceived(message) {
+            if (message === Common.MESSAGE_STOP_EXHALE) {
+                stop_helxa_test()
+            }
         }
     }
 }

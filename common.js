@@ -101,6 +101,8 @@ const METHOD_HELXA_STARTED = "exhale_started"
 const METHOD_DEVICE_HELXA_FAILED = "device_exhale_failed"
 const METHOD_GET_SAMPLE = "get_sample"
 
+const MESSAGE_STOP_EXHALE = "__msg__stop__exhale"
+
 const HELXA_TIPS = {
     "init": "开始吸气前, 请先主动排空肺里的气",
     "ready": "请开始吸气(注意是吸仪器中的气!!)",
@@ -235,10 +237,10 @@ function mapValue2(input) {
 // 红线为 45-55
 function mapValue(input) {
     if (input < -80) {
-        return -19
+        return -14
     } else if (input <= -30) {
-        // -80, -30 => -18,-10
-        return -10 + (input + 30) * 8 / 50
+        // -80, -30 => -14,-10
+        return -10 + (input + 30) * 4 / 50
     } else if (input <= 0) {
         // -30, 0 => -10, 0
         return input / 3

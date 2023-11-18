@@ -17,12 +17,14 @@ Rectangle {
     function dataChanged(obj) {
         trace_umd1_temp.value = obj[Common.TRACE_UMD1_TEMP] / 100.0
         func_name.value = obj[Common.FUNC_NAME]
-        func_status.value = _status
+        func_status.value = obj[Common.FUNC_STATUS]
+
         ambient_temp.value = obj[Common.AMBIENT_TEMP] / 100.0
         ambient_humi.value = obj[Common.AMBIENT_HUMI]
         flow_rt.value = obj[Common.FLOW_RT] / 10.0
         trace_umd1.value = obj[Common.TRACE_UMD1]
         starting = !Common.is_helxa_finish(func_status.value)
+
         update_time.value = Common.formatDate2(new Date(obj["update_time"]))
     }
 

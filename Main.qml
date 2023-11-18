@@ -41,8 +41,6 @@ ApplicationWindow {
 
     property bool exhaleStarting: false
 
-    property bool forceExhaleStop: false
-
     property var arr_helxa: [//                "None",
         //                "Feno50Train1",
         //                "Feno50Train2",
@@ -88,7 +86,7 @@ ApplicationWindow {
         appSettings.test_id += 1
     }
 
-    function getResultMsg() {
+    function getResultMsg(type) {
         var success = _status === Common.STATUS_END_FINISH
         var msg = ""
 
@@ -112,8 +110,15 @@ ApplicationWindow {
                 var r = Math.abs(av1 - av2).toFixed(2)
                 var fix_r = fix_umd(
                             sample_data[Common.TRACE_UMD1_TEMP] / 100.0, r)
-                msg = "测试成功: 气袋浓度(" + appSettings.puppet_con + ") umd1均值差 = "
-                        + fix_r + "/" + fix_umd2(fix_r) + " (ppb)"
+                if (type === "FENO50_MODE1") {
+                    console.log("result = " + fix_umd2(fix_r))
+                    msg = "测试成功: " + parseFloat(fix_umd2(fix_r)).toFixed(
+                                0) + " (ppb)"
+                } else {
+                    msg = "测试成功: 气袋浓度(" + appSettings.puppet_con
+                            + ") umd1均值差 = " + fix_r + "/" + fix_umd2(
+                                fix_r) + " (ppb)"
+                }
                 save_to_file(r, fix_r, fix_umd2(fix_r))
             } else {
                 success = false
@@ -160,6 +165,10 @@ ApplicationWindow {
 
     ToastManager {
         id: toast
+    }
+
+    EventBus {
+        id: bus
     }
 
     FileIO {
@@ -209,6 +218,11 @@ ApplicationWindow {
             id: newFnoView
             NewFenoMode {}
         }
+
+        Component {
+            id: analysisView
+            AnalysisView {}
+        }
     }
 
     function pushSnoView() {
@@ -219,6 +233,10 @@ ApplicationWindow {
     function pushNewFenoView() {
         whichView = 3
         stack.push(newFnoView)
+    }
+    function pushAnalysisView() {
+        whichView = 4
+        stack.replace(analysisView)
     }
 
     function pop() {
