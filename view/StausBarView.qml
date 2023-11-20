@@ -2,12 +2,13 @@ import QtQuick
 
 ElevationItem {
     width: parent.width
-    height: 20
+    height: 40
 
     elevation: 4
     Text {
         id: time
         text: ""
+        font.pixelSize: 20
         anchors.centerIn: parent
     }
 

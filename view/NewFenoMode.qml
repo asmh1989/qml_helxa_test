@@ -193,6 +193,8 @@ Rectangle {
             anchors.topMargin: 6
             color: '#f0ffff'
             Button {
+                height: 40
+                width: 40
                 icon {
                     source: "/img/back.png"
                     color: "#0da7ad"
@@ -232,6 +234,10 @@ Rectangle {
                         id: smile
                         y: 28
                         height: parent.height - 78
+                        anchors {
+                            left: parent.left
+                            leftMargin: 30
+                        }
                     }
 
                     Text {

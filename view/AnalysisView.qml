@@ -20,7 +20,7 @@ Rectangle {
     function finish() {
         if (chart_timer.running) {
             txt.text = "测试成功"
-            dialogText.text = getResultMsg("FENO50_MODE1")
+            messageDialog.text = getResultMsg("FENO50_MODE1")
             messageDialog.open()
             console.log("chart  stop!!")
             chart_timer.stop()
@@ -115,103 +115,110 @@ Rectangle {
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
-        width: 250
-        height: 250
+        width: 400
+        height: 300
         parent: Overlay.overlay
         modal: true
 
+        closePolicy: Popup.NoAutoClose
+        title: "测试成功"
+
         property alias text: dialogText.text
+
+        footer: DialogButtonBox {
+            Button {
+                text: "打印"
+                onClicked: {
+                    messageDialog.accept()
+                }
+            }
+            Button {
+                text: "返回"
+                onClicked: {
+                    messageDialog.reject()
+                }
+            }
+        }
 
         Item {
             anchors.fill: parent
-
             Text {
                 id: dialogText
                 text: qsTr("text")
                 font.pixelSize: 24
                 anchors.centerIn: parent
             }
+        }
 
-            Row {
-                anchors {
-                    horizontalCenter: parent.horizontalCenter
-                    bottom: parent.bottom
-                }
-                spacing: 20
-
-                Button {
-                    text: "打印"
-                    onClicked: {
-                        bus.sendMessage(Common.MESSAGE_PRINT_RD,
-                                        dialogText.text + "\r\n")
-                        messageDialog.close()
-                        pop()
-                    }
-                }
-
-                Button {
-                    text: "返回"
-                    onClicked: {
-                        messageDialog.close()
-                        pop()
-                    }
-                }
-            }
+        onAccepted: {
+            bus.sendMessage(Common.MESSAGE_PRINT_RD, dialogText.text + "\r\n")
+            pop()
+        }
+        onRejected: {
+            pop()
         }
     }
 
     Column {
         anchors.fill: parent
-        //        spacing: 6
+
+        spacing: 6
 
         //        Status {
         //            id: my_satatus
         //            timeValue: false
         //        }
-        Rectangle {
+        //        Rectangle {
+        //            id: r1
+        //            height: 40
+        //            width: parent.width
+        //            anchors.topMargin: 6
+        //            color: '#f0ffff'
+
+        //            //            Button {
+        //            //                text: "返回"
+        //            //                anchors.verticalCenter: parent.verticalCenter
+        //            //                //                anchors.left: parent.left
+        //            //                anchors.leftMargin: 10
+        //            //                onClicked: {
+        //            //                    if (exhaleStarting) {
+        //            //                        bus.sendMessage(Common.MESSAGE_STOP_EXHALE)
+        //            //                    }
+        //            //                    pop()
+        //            //                }
+        //            //            }
+
+        //        }
+        Item {
             id: r1
             height: 40
             width: parent.width
-            anchors.topMargin: 6
-            color: '#f0ffff'
+            ProgressBar {
+                width: parent.width
+                height: 40
+                implicitHeight: 40
+                indeterminate: true
+                id: bar
+                visible: true
 
-            //            Button {
-            //                text: "返回"
-            //                anchors.verticalCenter: parent.verticalCenter
-            //                //                anchors.left: parent.left
-            //                anchors.leftMargin: 10
-            //                onClicked: {
-            //                    if (exhaleStarting) {
-            //                        bus.sendMessage(Common.MESSAGE_STOP_EXHALE)
-            //                    }
-            //                    pop()
-            //                }
-            //            }
+                background: Rectangle {
+                    color: "lightgray"
+                }
+                contentItem: Rectangle {
+                    width: bar.value * parent.width
+                    height: parent.height
+                    color: "#d2ebeb"
+                }
+            }
+
             Text {
                 id: txt
+                z: 2
                 anchors.centerIn: parent
                 text: ""
                 font.pixelSize: 18
                 font.bold: true
                 color: 'black'
-            }
-        }
-
-        ProgressBar {
-            width: parent.width
-            height: 40
-            implicitHeight: 40
-            indeterminate: true
-            id: bar
-            visible: true
-
-            background: Rectangle {
-                color: "lightgray"
-            }
-            contentItem: Rectangle {
-                width: bar.value * parent.width
-                height: parent.height
-                color: "#d2ebeb"
             }
         }
 
