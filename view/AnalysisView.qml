@@ -217,7 +217,7 @@ Rectangle {
 
         Row {
             width: parent.width
-            height: parent.height - r1.height - 6
+            height: parent.height - r1.height - 26
 
             Item {
                 width: parent.width
