@@ -258,7 +258,7 @@ Item {
     Timer {
         id: timer
         repeat: true
-        interval: 60
+        interval: 100
         onTriggered: () => {
                          if (!in_helxa) {
                              helxa_reset()

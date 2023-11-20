@@ -131,7 +131,9 @@ ApplicationWindow {
             msg = "测试失败: " + msg + "! 请重试"
         }
 
-        toast.show(msg, 2000)
+        if (type !== "FENO50_MODE1") {
+            toast.show(msg, 2000)
+        }
         return msg
     }
 
