@@ -112,7 +112,7 @@ ApplicationWindow {
                             sample_data[Common.TRACE_UMD1_TEMP] / 100.0, r)
                 if (type === "FENO50_MODE1") {
                     console.log("result = " + fix_umd2(fix_r))
-                    msg = parseFloat(fix_umd2(fix_r)).toFixed(0) + " (ppb)"
+                    msg = parseFloat(fix_umd2(fix_r)).toFixed(0) + "  ppb"
                 } else {
                     msg = "测试成功: 气袋浓度(" + appSettings.puppet_con
                             + ") umd1均值差 = " + fix_r + "/" + fix_umd2(
@@ -149,6 +149,12 @@ ApplicationWindow {
                     + " real width = " + Screen.width)
     }
 
+    //    DialogResultView {
+    //        id: dd
+    //        Component.onCompleted: {
+    //            dd.open()
+    //        }
+    //    }
     function dp(v) {
         return v * dpi
     }

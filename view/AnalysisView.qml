@@ -65,7 +65,7 @@ Rectangle {
                              console.log(
                                  "测试结束 : " + Common.get_status_info(_status))
                              finish()
-                             bar.visible = false
+                             //                             bar.visible = false
                              return
                          }
                          if (Common.is_helxa_analy(_status)) {
@@ -128,12 +128,14 @@ Rectangle {
         footer: DialogButtonBox {
             Button {
                 text: "打印"
+                font.pixelSize: 20
                 onClicked: {
                     messageDialog.accept()
                 }
             }
             Button {
                 text: "返回"
+                font.pixelSize: 20
                 onClicked: {
                     messageDialog.reject()
                 }

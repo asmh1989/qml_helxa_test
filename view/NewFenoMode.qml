@@ -174,8 +174,8 @@ Rectangle {
                 chart.append(flow_x, Common.mapValue2(average))
                 smile.append(Common.mapValue2(average))
             }
+            flow_x += 0.1
         }
-        flow_x += 0.1
     }
 
     Column {

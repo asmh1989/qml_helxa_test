@@ -19,12 +19,14 @@ Dialog {
     footer: DialogButtonBox {
         Button {
             text: "打印"
+            font.pixelSize: 20
             onClicked: {
                 messageDialog.accept()
             }
         }
         Button {
             text: "返回"
+            font.pixelSize: 20
             onClicked: {
                 messageDialog.reject()
             }
