@@ -72,7 +72,7 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext &context,
 }
 
 int main(int argc, char *argv[]) {
-  qputenv("QT_SCALE_FACTOR", "1.25");
+  qputenv("QT_SCALE_FACTOR", "1.0");
 
   QApplication app(argc, argv);
 

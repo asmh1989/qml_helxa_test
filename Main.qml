@@ -9,8 +9,8 @@ import FileIO
 
 ApplicationWindow {
     id: window
-    width: dp(1280)
-    height: dp(800)
+    width: 1280
+    height: 800
     minimumWidth: dp(840)
     //    minimumHeight: dp(600)
     visible: true
@@ -145,6 +145,9 @@ ApplicationWindow {
         var minutes = String(now.getMinutes()).padStart(2, '0')
         var seconds = String(now.getSeconds()).padStart(2, '0')
         _time_name = year + month + day + '-' + hours + minutes + seconds
+
+        console.log(Screen.desktopAvailableWidth + "," + Screen.desktopAvailableHeight
+                    + " real width = " + Screen.width)
     }
 
     function dp(v) {
