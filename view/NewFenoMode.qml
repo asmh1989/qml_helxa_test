@@ -188,20 +188,23 @@ Rectangle {
         //        }
         Rectangle {
             id: r1
-            height: 40
+            height: 60
             width: parent.width
             anchors.topMargin: 6
             color: '#f0ffff'
             Button {
-                height: 40
-                width: 40
+                height: parent.height
+                width: height
                 icon {
                     source: "/img/back.png"
                     color: "#0da7ad"
+                    height: parent.height
+                    width: parent.width
                 }
 
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin: 10
+                background: Item {}
                 onClicked: {
                     bus.sendMessage(Common.MESSAGE_STOP_EXHALE)
                     pop()
@@ -212,7 +215,7 @@ Rectangle {
                 id: txt
                 anchors.centerIn: parent
                 text: Common.HELXA_TIPS.init
-                font.pixelSize: 16
+                font.pixelSize: 24
                 font.bold: true
                 color: 'black'
             }

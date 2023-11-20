@@ -153,7 +153,8 @@ Rectangle {
         }
 
         onAccepted: {
-            bus.sendMessage(Common.MESSAGE_PRINT_RD, dialogText.text + "\r\n")
+            bus.sendMessage(Common.MESSAGE_PRINT_RD,
+                            "测试成功： " + dialogText.text + "\r\n")
             pop()
         }
         onRejected: {
@@ -193,12 +194,11 @@ Rectangle {
         //        }
         Item {
             id: r1
-            height: 40
+            height: 60
             width: parent.width
             ProgressBar {
                 width: parent.width
-                height: 40
-                implicitHeight: 40
+                height: parent.height
                 indeterminate: true
                 id: bar
                 visible: true
@@ -213,11 +213,14 @@ Rectangle {
                 }
             }
             Button {
-                height: 40
-                width: 40
+                height: parent.height
+                width: height
+                background: Item {}
                 icon {
                     source: "/img/back.png"
                     color: "#0da7ad"
+                    height: parent.height
+                    width: parent.width
                 }
 
                 anchors.verticalCenter: parent.verticalCenter
