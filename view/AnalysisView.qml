@@ -212,6 +212,22 @@ Rectangle {
                     color: "#d2ebeb"
                 }
             }
+            Button {
+                height: 40
+                width: 40
+                icon {
+                    source: "/img/back.png"
+                    color: "#0da7ad"
+                }
+
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: 10
+                onClicked: {
+                    chart_timer.stop()
+                    bus.sendMessage(Common.MESSAGE_STOP_EXHALE)
+                    pop()
+                }
+            }
 
             Text {
                 id: txt
