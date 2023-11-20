@@ -54,6 +54,9 @@ qt6_add_qml_module(appqt-websockerts
         QML_FILES view/NewFenoMode.qml
         QML_FILES EventBus.qml
         QML_FILES view/AnalysisView.qml
+        QML_FILES view/StausBarView.qml
+        QML_FILES view/ElevationItem.qml
+        QML_FILES view/DialogResultView.qml
 )
 
 

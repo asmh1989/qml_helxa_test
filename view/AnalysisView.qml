@@ -19,7 +19,9 @@ Rectangle {
 
     function finish() {
         if (chart_timer.running) {
-            txt.text = getResultMsg("FENO50_MODE1")
+            txt.text = "测试成功"
+            dialogText.text = getResultMsg("FENO50_MODE1")
+            messageDialog.open()
             console.log("chart  stop!!")
             chart_timer.stop()
             reset_data()
@@ -108,34 +110,83 @@ Rectangle {
         chart.append(umd1_x, average)
     }
 
+    Dialog {
+        id: messageDialog
+
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        width: 250
+        height: 250
+        parent: Overlay.overlay
+        modal: true
+
+        property alias text: dialogText.text
+
+        Item {
+            anchors.fill: parent
+
+            Text {
+                id: dialogText
+                text: qsTr("text")
+                font.pixelSize: 24
+                anchors.centerIn: parent
+            }
+
+            Row {
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    bottom: parent.bottom
+                }
+                spacing: 20
+
+                Button {
+                    text: "打印"
+                    onClicked: {
+                        bus.sendMessage(Common.MESSAGE_PRINT_RD,
+                                        dialogText.text + "\r\n")
+                        messageDialog.close()
+                        pop()
+                    }
+                }
+
+                Button {
+                    text: "返回"
+                    onClicked: {
+                        messageDialog.close()
+                        pop()
+                    }
+                }
+            }
+        }
+    }
+
     Column {
         anchors.fill: parent
-        spacing: 6
+        //        spacing: 6
 
-        Status {
-            id: my_satatus
-            timeValue: false
-        }
-
+        //        Status {
+        //            id: my_satatus
+        //            timeValue: false
+        //        }
         Rectangle {
             id: r1
-            height: 60
+            height: 40
             width: parent.width
             anchors.topMargin: 6
             color: '#f0ffff'
-            Button {
-                text: "返回"
-                anchors.verticalCenter: parent.verticalCenter
-                //                anchors.left: parent.left
-                anchors.leftMargin: 10
-                onClicked: {
-                    if (exhaleStarting) {
-                        bus.sendMessage(Common.MESSAGE_STOP_EXHALE)
-                    }
-                    pop()
-                }
-            }
 
+            //            Button {
+            //                text: "返回"
+            //                anchors.verticalCenter: parent.verticalCenter
+            //                //                anchors.left: parent.left
+            //                anchors.leftMargin: 10
+            //                onClicked: {
+            //                    if (exhaleStarting) {
+            //                        bus.sendMessage(Common.MESSAGE_STOP_EXHALE)
+            //                    }
+            //                    pop()
+            //                }
+            //            }
             Text {
                 id: txt
                 anchors.centerIn: parent
@@ -144,13 +195,23 @@ Rectangle {
                 font.bold: true
                 color: 'black'
             }
+        }
 
-            ProgressBar {
-                width: parent.width
-                height: 12
-                indeterminate: true
-                id: bar
-                visible: true
+        ProgressBar {
+            width: parent.width
+            height: 40
+            implicitHeight: 40
+            indeterminate: true
+            id: bar
+            visible: true
+
+            background: Rectangle {
+                color: "lightgray"
+            }
+            contentItem: Rectangle {
+                width: bar.value * parent.width
+                height: parent.height
+                color: "#d2ebeb"
             }
         }
 
@@ -184,7 +245,7 @@ Rectangle {
                     antialiasing: true
                     legend.visible: false
 
-                    LineSeries {
+                    SplineSeries {
                         id: chart
                         axisX: umdAxisX
                         axisY: umd1AxisY
@@ -194,6 +255,7 @@ Rectangle {
                         id: umdAxisX
                         min: 0
                         max: 600
+                        gridVisible: false
                         labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
 
                         //                            tickCount: 10

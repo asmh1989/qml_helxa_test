@@ -102,6 +102,7 @@ const METHOD_DEVICE_HELXA_FAILED = "device_exhale_failed"
 const METHOD_GET_SAMPLE = "get_sample"
 
 const MESSAGE_STOP_EXHALE = "__msg__stop__exhale"
+const MESSAGE_PRINT_RD = "__msg__print__rd"
 
 const HELXA_TIPS = {
     "init": "开始吸气前, 请先主动排空肺里的气",

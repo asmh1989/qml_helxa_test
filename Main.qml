@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
-
 import "common.js" as Common
 import "./view"
 
@@ -10,15 +9,16 @@ import FileIO
 
 ApplicationWindow {
     id: window
-    width: dp(840)
-    height: dp(600)
+    width: dp(1280)
+    height: dp(800)
     minimumWidth: dp(840)
     //    minimumHeight: dp(600)
     visible: true
     title: qsTr("em-exhale")
-    x: appSettings.sceen_x
-    y: appSettings.sceen_y
 
+    //    x: appSettings.sceen_x
+    //    y: appSettings.sceen_y
+    flags: Qt.FramelessWindowHint | Qt.Window
     property bool is_open: false
 
     property real dpScale: 1.5
@@ -185,43 +185,54 @@ ApplicationWindow {
     Rectangle {
         anchors.fill: parent
         color: '#F3F9FF'
-
-        StackView {
-            id: stack
-            initialItem: mainView
+        Item {
             anchors.fill: parent
 
-            Transition {
-                PropertyAnimation {
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: 200
+            StausBarView {
+                id: statusBar
+            }
+
+            StackView {
+                id: stack
+                initialItem: mainView
+                anchors {
+                    top: statusBar.bottom
+                    bottom: parent.bottom
+                }
+
+                width: parent.width
+                Transition {
+                    PropertyAnimation {
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 200
+                    }
                 }
             }
-        }
 
-        Component {
-            id: mainView
-            Rootview {}
-        }
-
-        Component {
-            id: snoview
-
-            Snodataview {
-                id: sno_data_view
+            Component {
+                id: mainView
+                Rootview {}
             }
-        }
 
-        Component {
-            id: newFnoView
-            NewFenoMode {}
-        }
+            Component {
+                id: snoview
 
-        Component {
-            id: analysisView
-            AnalysisView {}
+                Snodataview {
+                    id: sno_data_view
+                }
+            }
+
+            Component {
+                id: newFnoView
+                NewFenoMode {}
+            }
+
+            Component {
+                id: analysisView
+                AnalysisView {}
+            }
         }
     }
 

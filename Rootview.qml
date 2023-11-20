@@ -287,9 +287,16 @@ Item {
     Connections {
         target: bus
 
-        function onMessageReceived(message) {
+        function onMessageReceived(message, content) {
             if (message === Common.MESSAGE_STOP_EXHALE) {
                 stop_helxa_test()
+            } else if (message === Common.MESSAGE_PRINT_RD) {
+                send_json({
+                              "method": "printer_use_serial",
+                              "args": {
+                                  "content": content
+                              }
+                          })
             }
         }
     }

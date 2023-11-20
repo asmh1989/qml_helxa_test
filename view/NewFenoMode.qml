@@ -12,7 +12,7 @@ Rectangle {
     //    property var arr_flow_rt: []
     property int _start_time: 0
     property double prev_time: 0.0
-    property int flow_x: 0
+    property real flow_x: 0
     property int flow_min_y: 0
     property int av_flow_rt: 0
 
@@ -160,12 +160,11 @@ Rectangle {
         let average = sum / len
 
         av_flow_rt = average
-        flow_x += 1
 
         if (Common.is_helxa_sample(_status)) {
 
             if (flow_x > xAxis.max) {
-                xAxis.max += 10
+                xAxis.max += 1
             }
 
             if (appSettings.use_real_red_line) {
@@ -176,17 +175,17 @@ Rectangle {
                 smile.append(Common.mapValue2(average))
             }
         }
+        flow_x += 0.1
     }
 
     Column {
         anchors.fill: parent
         spacing: 6
 
-        Status {
-            id: my_satatus
-            timeValue: false
-        }
-
+        //        Status {
+        //            id: my_satatus
+        //            timeValue: false
+        //        }
         Rectangle {
             id: r1
             height: 40
@@ -194,7 +193,11 @@ Rectangle {
             anchors.topMargin: 6
             color: '#f0ffff'
             Button {
-                text: "返回"
+                icon {
+                    source: "/img/back.png"
+                    color: "#0da7ad"
+                }
+
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin: 10
                 onClicked: {
@@ -229,6 +232,16 @@ Rectangle {
                         id: smile
                         y: 28
                         height: parent.height - 78
+                    }
+
+                    Text {
+                        text: "FLOW (ml/s)"
+                        anchors {
+                            left: char_view.left
+                            top: parent.top
+                            leftMargin: 50
+                        }
+                        z: 10
                     }
 
                     ChartView {
@@ -270,73 +283,56 @@ Rectangle {
                             axisY: yAxis
                         }
 
-                        LineSeries {
+                        SplineSeries {
                             id: chart
                             axisX: xAxis
                             axisY: yAxis
                             color: 'blue'
                         }
 
-                        CategoryAxis {
-                            id: xAxis
-                            min: 0
-                            max: 12 * 1000 / _interval
-                            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
+                        LineSeries {
+                            // 设置线条样式
+                            style: Qt.DashLine
+                            width: 1.0
+                            color: 'green'
 
-                            //                            tickCount: 10
-                            //                            labelFormat: "%.0f"
-                            CategoryRange {
-                                label: "0"
-                                endValue: 0
+                            XYPoint {
+                                x: 0
+                                y: 0
                             }
-                            CategoryRange {
-                                label: "1"
-                                endValue: 10
+                            XYPoint {
+                                x: 500
+                                y: 0
                             }
-                            CategoryRange {
-                                label: "2"
-                                endValue: 20
+                            axisX: xAxis
+                            axisY: yAxis
+                        }
+
+                        LineSeries {
+                            // 设置线条样式
+                            style: Qt.DashLine
+                            width: 1.0
+                            color: 'green'
+
+                            XYPoint {
+                                x: 0
+                                y: 50
                             }
-                            CategoryRange {
-                                label: "3"
-                                endValue: 30
+                            XYPoint {
+                                x: 500
+                                y: 50
                             }
-                            CategoryRange {
-                                label: "4"
-                                endValue: 40
-                            }
-                            CategoryRange {
-                                label: "5"
-                                endValue: 50
-                            }
-                            CategoryRange {
-                                label: "6"
-                                endValue: 60
-                            }
-                            CategoryRange {
-                                label: "7"
-                                endValue: 70
-                            }
-                            CategoryRange {
-                                label: "8"
-                                endValue: 80
-                            }
-                            CategoryRange {
-                                label: "9"
-                                endValue: 90
-                            }
-                            CategoryRange {
-                                label: "10"
-                                endValue: 100
-                            }
-                            CategoryRange {
-                                label: "11"
-                                endValue: 110
-                            }
-                            CategoryRange {
-                                label: "12"
-                                endValue: 120
-                            }
+                            axisX: xAxis
+                            axisY: yAxis
+                        }
+
+                        ValuesAxis {
+                            id: xAxis
+                            gridVisible: false
+                            min: 0
+                            max: 12
+                            tickCount: 10
+                            labelFormat: "%.0f"
                         }
 
                         CategoryAxis {
@@ -345,8 +341,8 @@ Rectangle {
                             max: 85 // 最大值
                             labelFormat: "%.0f"
                             labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
-                            titleText: "FLOW_RT (ml/s)"
 
+                            //                            titleText: "FLOW_RT (ml/s)"
                             CategoryRange {
                                 label: ""
                                 endValue: -15
