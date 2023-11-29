@@ -146,7 +146,12 @@ Rectangle {
     }
 
     function addFlowRt(obj) {
-        var flow_rt = obj[Common.FLOW_RT] / 10.0
+        var flow_rt = (obj[Common.FLOW_RT] / 60.0).toFixed(1)
+        var press_rt = obj[Common.PRESS_RT] / 10.0
+
+        if (_status === Common.STATUS_FLOW2) {
+            flow_rt = press_rt
+        }
 
         arr_flow_rt.push(flow_rt)
 
