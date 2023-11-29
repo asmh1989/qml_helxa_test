@@ -16,9 +16,11 @@ ApplicationWindow {
     visible: true
     title: qsTr("em-exhale")
 
-    //    x: appSettings.sceen_x
-    //    y: appSettings.sceen_y
-    flags: Qt.FramelessWindowHint | Qt.Window
+    x: appSettings.sceen_x
+    y: appSettings.sceen_y
+    property bool show_status_bar: false
+
+    flags: show_status_bar ? Qt.FramelessWindowHint | Qt.Window : undefined
     property bool is_open: false
 
     property real dpScale: 1.5
@@ -45,8 +47,7 @@ ApplicationWindow {
         //                "Feno50Train1",
         //                "Feno50Train2",
         "Feno50Mode1", //                "Feno50Mode2",
-        //                "Feno200Mode1",
-        //                "Feno200Mode2",
+        "Feno200Mode1", //                "Feno200Mode2",
         "Sno" //                "NnoMode1",
         //                "NnoMode2",
         //                "Eco",
@@ -69,7 +70,7 @@ ApplicationWindow {
     function save_to_file(diff, f1, f2) {
         var obj = sample_data
         var helxa_type = arr_helxa[appSettings.helxa_type]
-        var trace_umd1_temp = obj[Common.TRACE_UMD1_TEMP] / 100.0
+        var trace_umd1_temp = obj[Common.UMD1_TEMP] / 100.0
         var ambient_temp = obj[Common.AMBIENT_TEMP] / 100.0
         var ambient_humi = obj[Common.AMBIENT_HUMI]
         var result_data = [appSettings.mac_code, Common.formatDate(
@@ -109,7 +110,7 @@ ApplicationWindow {
                 var av2 = sum / lastElements.length
                 var r = Math.abs(av1 - av2).toFixed(2)
                 var fix_r = fix_umd(
-                            sample_data[Common.TRACE_UMD1_TEMP] / 100.0, r)
+                            sample_data[Common.UMD1_TEMP] / 100.0, r)
                 if (type === "FENO50_MODE1") {
                     console.log("result = " + fix_umd2(fix_r))
                     msg = parseFloat(fix_umd2(fix_r)).toFixed(0) + "  ppb"
@@ -200,13 +201,14 @@ ApplicationWindow {
 
             StausBarView {
                 id: statusBar
+                visible: show_status_bar
             }
 
             StackView {
                 id: stack
                 initialItem: mainView
                 anchors {
-                    top: statusBar.bottom
+                    top: show_status_bar ? statusBar.bottom : parent.top
                     bottom: parent.bottom
                 }
 

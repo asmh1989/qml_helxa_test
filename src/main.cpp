@@ -83,6 +83,9 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("em");
   app.setOrganizationDomain("em.com");
   app.setApplicationName("em");
+  // windows下全局代理问题
+  QNetworkProxyFactory::setUseSystemConfiguration(false);
+
   //    QQuickStyle::setStyle("Material");
 
   QQuickStyle::setStyle("Universal");

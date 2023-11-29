@@ -161,7 +161,12 @@ Rectangle {
     }
 
     function addFlowRt(obj) {
-        var flow_rt = obj[Common.FLOW_RT] / 10.0
+        var flow_rt = (obj[Common.FLOW_RT] / 60.0).toFixed(1)
+        var press_rt = obj[Common.PRESS_RT] / 10.0
+
+        if (_status === Common.STATUS_FLOW2) {
+            flow_rt = press_rt
+        }
 
         //        if (Common.is_helxa_analy(_status)) {
         //            arr_flow_rt.splice(0, arr_flow_rt.length)
@@ -322,7 +327,7 @@ Rectangle {
                                 y: 70
                             }
                             XYPoint {
-                                x: 120
+                                x: 200
                                 y: 70
                             }
                             axisX: xAxis

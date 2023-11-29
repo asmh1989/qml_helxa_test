@@ -15,13 +15,15 @@ Rectangle {
 
     //    property var data
     function dataChanged(obj) {
-        trace_umd1_temp.value = obj[Common.TRACE_UMD1_TEMP] / 100.0
+        trace_umd1_temp.value = obj[Common.UMD1_TEMP] / 100.0
         func_name.value = obj[Common.FUNC_NAME]
         func_status.value = obj[Common.FUNC_STATUS]
 
         ambient_temp.value = obj[Common.AMBIENT_TEMP] / 100.0
         ambient_humi.value = obj[Common.AMBIENT_HUMI]
-        flow_rt.value = obj[Common.FLOW_RT] / 10.0
+        flow_rt.value = (obj[Common.FLOW_RT] / 60.0).toFixed(1)
+        press_rt.value = obj[Common.PRESS_RT] / 10.0
+
         trace_umd1.value = obj[Common.TRACE_UMD1]
         starting = !Common.is_helxa_finish(func_status.value)
 
@@ -64,6 +66,13 @@ Rectangle {
                     name: "实时采样流量"
                     value: "0"
                     unit: "mL/s"
+                }
+
+                MyLabel {
+                    id: press_rt
+                    name: "阻力"
+                    value: "0"
+                    unit: "pa"
                 }
 
                 MyLabel {

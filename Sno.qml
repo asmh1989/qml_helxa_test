@@ -68,21 +68,17 @@ Rectangle {
     }
 
     function addFlowRt(obj) {
-        var flow_rt = obj[Common.FLOW_RT] / 10.0
+        var flow_rt = (obj[Common.FLOW_RT] / 60.0).toFixed(1)
 
-        // 从头加到尾
-        //        if(Common.is_helxa_analy(_status)) {
-        //            arr_flow_rt.splice(0, arr_flow_rt.length);
-        //            return;
-        //        }
         arr_flow_rt.push(flow_rt)
 
-        var nums = _interval / 100
-        var len = Math.min(arr_flow_rt.length, nums)
-        let lastElements = arr_flow_rt.slice(-len)
-        let sum = lastElements.reduce(
-                (accumulator, currentValue) => accumulator + currentValue, 0)
-        let average = sum / len
+        //        var nums = _interval / 100
+        //        var len = Math.min(arr_flow_rt.length, nums)
+        //        let lastElements = arr_flow_rt.slice(-len)
+        //        let sum = lastElements.reduce(
+        //                (accumulator, currentValue) => accumulator + currentValue, 0)
+        //        let average = sum / len
+        let average = flow_rt
         flow_x += 1
 
         if (flow_x > valueAxisX.max - 10) {
@@ -96,7 +92,6 @@ Rectangle {
         if (average < valueAxisY.min + 5) {
             valueAxisY.min -= 10
         }
-
         chart.append(flow_x, average)
     }
 
@@ -213,7 +208,7 @@ Rectangle {
             ValueAxis {
                 id: valueAxisY
                 min: -10
-                max: 60
+                max: 10
                 tickCount: 6
                 labelFormat: "%.0f"
                 titleText: "FLOW_RT (ml/s)"
