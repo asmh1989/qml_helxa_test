@@ -91,22 +91,6 @@ ApplicationWindow {
             initialItem: mainView
             anchors.fill: parent
 
-            //            pushEnter: Transition {
-            //                PropertyAnimation {
-            //                    property: "y"
-            //                    from: window.height
-            //                    to: 0
-            //                    duration: 200
-            //                }
-            //            }
-            //            popExit: Transition {
-            //                PropertyAnimation {
-            //                    property: "y"
-            //                    from: 0
-            //                    to: window.height
-            //                    duration: 200
-            //                }
-            //            }
             Transition {
                 PropertyAnimation {
                     property: "opacity"

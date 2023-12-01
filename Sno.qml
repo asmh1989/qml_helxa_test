@@ -23,7 +23,6 @@ Rectangle {
             result.text = getResultMsg("Sno")
             console.log("chart  stop!!")
             chart_timer.stop()
-            reset_data()
             _start_time = 0
         }
     }
@@ -58,7 +57,6 @@ Rectangle {
                          if (_start_time === 0) {
                              var update_time = new Date(obj[Common.UPDATE_TIME]).getTime()
                              _start_time = update_time
-                             reset_data()
                              return
                          }
 
@@ -131,6 +129,7 @@ Rectangle {
     }
 
     function start() {
+        reset_data()
         result.text = ""
         lines_umd1.clear()
         chart.clear()
@@ -144,7 +143,6 @@ Rectangle {
 
         Row {
             height: 28
-            //            width:400
             anchors.horizontalCenter: parent.horizontalCenter
             z: 2
             spacing: 6
@@ -202,7 +200,7 @@ Rectangle {
                 axisY: valueAxisY
             }
 
-            ValueAxis {
+            ValuesAxis {
                 id: valueAxisX
                 min: 0
                 max: 100
@@ -210,7 +208,7 @@ Rectangle {
                 labelFormat: "%.0f"
             }
 
-            ValueAxis {
+            ValuesAxis {
                 id: valueAxisY
                 min: -10
                 max: 60
@@ -234,7 +232,7 @@ Rectangle {
                 axisY: umd1AxisY
             }
 
-            ValueAxis {
+            ValuesAxis {
                 id: umdAxisX
                 min: 0
                 max: 100
@@ -242,7 +240,7 @@ Rectangle {
                 labelFormat: "%.0f"
             }
 
-            ValueAxis {
+            ValuesAxis {
                 id: umd1AxisY
                 min: -10
                 max: 60

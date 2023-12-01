@@ -76,6 +76,10 @@ int main(int argc, char *argv[]) {
 
   QApplication app(argc, argv);
 
+
+  // windows下全局代理问题
+  QNetworkProxyFactory::setUseSystemConfiguration(false);
+
 #ifndef QT_DEBUG
   qInstallMessageHandler(redirectDebugMessages);
 #endif
