@@ -158,12 +158,7 @@ Rectangle {
         var trace_umd1 = obj[Common.TRACE_UMD1]
         arr_umd1.push(trace_umd1)
 
-        var len = Math.min(arr_flow_rt.length, appSettings.aver_num)
-        let lastElements = arr_flow_rt.slice(-len)
-        let sum = lastElements.reduce(
-                (accumulator, currentValue) => accumulator + currentValue, 0)
-        let average = sum / len
-
+        var average = flow_rt
         av_flow_rt = average
 
         if (Common.is_helxa_sample(_status)) {
