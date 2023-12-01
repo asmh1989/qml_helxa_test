@@ -168,10 +168,6 @@ Rectangle {
             flow_rt = press_rt
         }
 
-        //        if (Common.is_helxa_analy(_status)) {
-        //            arr_flow_rt.splice(0, arr_flow_rt.length)
-        //            return
-        //        }
         arr_flow_rt.push(flow_rt)
 
         var trace_umd1 = obj[Common.TRACE_UMD1]

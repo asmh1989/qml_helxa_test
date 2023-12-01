@@ -47,7 +47,7 @@ ApplicationWindow {
         //                "Feno50Train1",
         //                "Feno50Train2",
         "Feno50Mode1", //                "Feno50Mode2",
-        "Feno200Mode1", //                "Feno200Mode2",
+        // "Feno200Mode1", //                "Feno200Mode2",
         "Sno" //                "NnoMode1",
         //                "NnoMode2",
         //                "Eco",
@@ -109,8 +109,7 @@ ApplicationWindow {
                             0)
                 var av2 = sum / lastElements.length
                 var r = Math.abs(av1 - av2).toFixed(2)
-                var fix_r = fix_umd(
-                            sample_data[Common.UMD1_TEMP] / 100.0, r)
+                var fix_r = fix_umd(sample_data[Common.UMD1_TEMP] / 100.0, r)
                 if (type === "FENO50_MODE1") {
                     console.log("result = " + fix_umd2(fix_r))
                     msg = parseFloat(fix_umd2(fix_r)).toFixed(0) + "  ppb"
