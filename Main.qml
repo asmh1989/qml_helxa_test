@@ -20,7 +20,7 @@ ApplicationWindow {
     y: appSettings.sceen_y
     property bool show_status_bar: false
 
-    flags: show_status_bar ? Qt.FramelessWindowHint | Qt.Window : undefined
+    flags: show_status_bar ? Qt.FramelessWindowHint | Qt.Window : Qt.Window
     property bool is_open: false
 
     property real dpScale: 1.5

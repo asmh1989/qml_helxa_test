@@ -9,8 +9,8 @@ import "./view"
 
 Rectangle {
     property int umd1_x: 0
-    property int umd1_min_y: 0
-    property int umd1_max_y: 0
+    property int umd1_min_y: 8000
+    property int umd1_max_y: -8000
 
     /// 用于画chart
     readonly property int _interval: 100
@@ -71,13 +71,6 @@ Rectangle {
         var flow_rt = (obj[Common.FLOW_RT] / 60.0).toFixed(1)
 
         arr_flow_rt.push(flow_rt)
-
-        //        var nums = _interval / 100
-        //        var len = Math.min(arr_flow_rt.length, nums)
-        //        let lastElements = arr_flow_rt.slice(-len)
-        //        let sum = lastElements.reduce(
-        //                (accumulator, currentValue) => accumulator + currentValue, 0)
-        //        let average = sum / len
         let average = flow_rt
         flow_x += 1
 
@@ -130,7 +123,7 @@ Rectangle {
         lines_umd1.clear()
         chart.clear()
         umd1_min_y = 100000
-        umd1_max_y = 0
+        umd1_max_y = -10000
         chart_timer.start()
     }
 
@@ -197,7 +190,7 @@ Rectangle {
                 axisY: valueAxisY
             }
 
-            ValueAxis {
+            ValuesAxis {
                 id: valueAxisX
                 min: 0
                 max: 100
@@ -205,7 +198,7 @@ Rectangle {
                 labelFormat: "%.0f"
             }
 
-            ValueAxis {
+            ValuesAxis {
                 id: valueAxisY
                 min: -10
                 max: 10

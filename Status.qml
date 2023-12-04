@@ -25,6 +25,7 @@ Rectangle {
         press_rt.value = obj[Common.PRESS_RT] / 10.0
 
         trace_umd1.value = obj[Common.TRACE_UMD1]
+        umd1_baseline.value = obj[Common.UMD1_BASELINE]
         starting = !Common.is_helxa_finish(func_status.value)
 
         update_time.value = Common.formatDate2(new Date(obj["update_time"]))
@@ -78,6 +79,13 @@ Rectangle {
                 MyLabel {
                     id: trace_umd1
                     name: "检测器1实时"
+                    value: "0"
+                    unit: ""
+                }
+
+                MyLabel {
+                    id: umd1_baseline
+                    name: "检测器1基线"
                     value: "0"
                     unit: ""
                 }
