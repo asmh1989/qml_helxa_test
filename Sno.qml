@@ -12,6 +12,9 @@ Rectangle {
     property int umd1_min_y: 8000
     property int umd1_max_y: -8000
 
+    property int umd1_baseline_min_y: 8000
+    property int umd1_baseline_max_y: -8000
+
     /// 用于画chart
     readonly property int _interval: 100
     property int _start_time: 0
@@ -92,12 +95,8 @@ Rectangle {
         var trace_umd1 = obj[Common.TRACE_UMD1]
         arr_umd1.push(trace_umd1)
 
-        var nums = _interval / 100
-        var len = Math.min(arr_umd1.length, nums)
-        let lastElements = arr_umd1.slice(-len)
-        let sum = lastElements.reduce(
-                (accumulator, currentValue) => accumulator + currentValue, 0)
-        let average = sum / len
+        let umd1_baseline = obj[Common.UMD1_BASELINE]
+        let average = trace_umd1
         umd1_x += 1
 
         if (umd1_x > umdAxisX.max - 10) {
@@ -107,15 +106,30 @@ Rectangle {
         if (umd1_min_y > average) {
             umd1_min_y = average
         }
+        if (umd1_baseline_min_y > umd1_baseline) {
+            umd1_baseline_min_y = umd1_baseline
+        }
 
         if (average > umd1_max_y) {
             umd1_max_y = average
         }
 
+        if (umd1_baseline > umd1_baseline_max_y) {
+            umd1_baseline_max_y = umd1_baseline
+        }
+
         umd1AxisY.min = Math.round(umd1_min_y - Math.abs(umd1_min_y) / 10 - 1)
         umd1AxisY.max = Math.ceil(umd1_max_y + Math.abs(umd1_max_y) / 10 + 1)
 
+        umd1AxisY2.min = Math.round(umd1_baseline_min_y - Math.abs(
+                                        umd1_baseline_min_y) / 10 - 1)
+        umd1AxisY2.max = Math.ceil(umd1_baseline_max_y + Math.abs(
+                                       umd1_baseline_max_y) / 10 + 1)
+
+        // if (Common.is_helxa_analy(_status)) {
         lines_umd1.append(umd1_x, average)
+        lines_umd1_baseline.append(umd1_x, umd1_baseline)
+        // }
     }
 
     function start() {
@@ -124,7 +138,10 @@ Rectangle {
         chart.clear()
         umd1_min_y = 100000
         umd1_max_y = -10000
+        umd1_baseline_min_y = 10000
+        umd1_baseline_max_y = -10000
         chart_timer.start()
+        lines_umd1_baseline.clear()
     }
 
     Item {
@@ -222,7 +239,12 @@ Rectangle {
                 axisY: umd1AxisY
             }
 
-            ValueAxis {
+            LineSeries {
+                id: lines_umd1_baseline
+                axisX: umdAxisX
+                axisYRight: umd1AxisY2
+            }
+            ValuesAxis {
                 id: umdAxisX
                 min: 0
                 max: 100
@@ -230,13 +252,22 @@ Rectangle {
                 labelFormat: "%.0f"
             }
 
-            ValueAxis {
+            ValuesAxis {
                 id: umd1AxisY
                 min: -10
                 max: 60
                 tickCount: 6
                 labelFormat: "%.0f"
-                titleText: "UMD1 (pbb)"
+                titleText: "UMD1 (ppb)"
+            }
+
+            ValuesAxis {
+                id: umd1AxisY2
+                min: -10
+                max: 60
+                tickCount: 6
+                labelFormat: "%.0f"
+                titleText: "UMD1 (ppb)"
             }
         }
 

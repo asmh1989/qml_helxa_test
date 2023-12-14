@@ -338,7 +338,7 @@ Item {
                     max: 60
                     tickCount: 6
                     labelFormat: "%.0f"
-                    titleText: "UMD1 (pbb)"
+                    titleText: "UMD1 (ppb)"
                 }
             }
         }

@@ -67,14 +67,33 @@ void SingletonManager::printer(QPrinter *printer) {
   }
 
   // 将图片缩放到A4纸的大小
+  printer->setPageSize(QPageSize(QPageSize::A4));
+  printer->setFullPage(true);
+
   QSizeF paperSize = printer->pageRect(QPrinter::Point).size();  // A4纸的大小
-  qDebug() << "paperSize: " << paperSize;
+  qDebug() << "Point: " << printer->pageRect(QPrinter::Point).size();
+  qDebug() << "DevicePixel: "
+           << printer->pageRect(QPrinter::DevicePixel).size();
+  qDebug() << "Millimeter: " << printer->pageRect(QPrinter::Millimeter).size();
+  qDebug() << "Inch: " << printer->pageRect(QPrinter::Inch).size();
 
   qDebug() << "image.size: " << image.size();
+
+  // QPageLayout p;
+  // p.setPageSize(QPageSize::A4, QMarginsF(0, 0, 0, 0));
+  // // p.setUnits(QPrinter::DevicePixel);
+  // printer->setPageLayout(p);
+  qDebug() << "当前页面布局: " << printer->pageLayout();
+  QMarginsF margins(0, 0, 0, 0);
+  printer->setPageMargins(margins, QPageLayout::Millimeter);
   // 打印图片
   QPainter painter;
   painter.begin(printer);
-  painter.drawImage(0, 0, image);
+  painter.setRenderHint(QPainter::Antialiasing, true);
+  painter.setRenderHint(QPainter::TextAntialiasing, true);
+  painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+
+  painter.drawImage(printer->pageRect(QPrinter::DevicePixel), image);
   painter.end();
 }
 

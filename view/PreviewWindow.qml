@@ -7,7 +7,7 @@ import QtCharts
 //import "common.js" as Common
 Rectangle {
     id: rect
-    visible: false
+    // visible: false
     width: 210 * 4 - 40 // A4纸的宽度（单位：毫米）
     height: 297 * 4 - 40 // A4纸的高度（单位：毫米）
     color: "white"
@@ -16,7 +16,13 @@ Rectangle {
 
     Item {
         anchors.fill: parent
-        anchors.margins: 30
+
+        anchors {
+            leftMargin: 40
+            rightMargin: 40
+            topMargin: 30
+            bottomMargin: 30
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -38,7 +44,7 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 2
-                    color: '#b6d2ec'
+                    color: 'black'
                 }
             }
 
@@ -192,7 +198,7 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 2
-                    color: '#b6d2ec'
+                    color: 'black'
                 }
             }
 
@@ -221,7 +227,7 @@ Rectangle {
                     animationOptions: ChartView.NoAnimation
 
                     SplineSeries {
-                        color: 'red'
+                        color: "gray"
                         XYPoint {
                             x: 0
                             y: 30
@@ -235,7 +241,7 @@ Rectangle {
                     }
 
                     SplineSeries {
-                        color: 'red'
+                        color: "gray"
                         XYPoint {
                             x: 0
                             y: 70
@@ -252,10 +258,10 @@ Rectangle {
                         id: chart
                         axisX: xAxis
                         axisY: yAxis
-                        color: 'blue'
+                        color: "gray"
                     }
 
-                    ValueAxis {
+                    ValuesAxis {
                         id: xAxis
                         min: 0
                         max: 120
@@ -333,10 +339,10 @@ Rectangle {
                         id: chart2
                         axisX: xAxis2
                         axisY: yAxis2
-                        color: 'black'
+                        color: "gray"
                     }
 
-                    ValueAxis {
+                    ValuesAxis {
                         id: xAxis2
                         min: 0
                         max: 120
@@ -344,7 +350,7 @@ Rectangle {
                         labelFormat: "%.0f"
                     }
 
-                    ValueAxis {
+                    ValuesAxis {
                         id: yAxis2
                         min: 0 // 最小值，避免出现0值
                         max: 120 // 最大值
@@ -360,7 +366,7 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 2
-                    color: '#b6d2ec'
+                    color: 'gray'
                 }
             }
             Label {
